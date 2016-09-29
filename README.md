@@ -1,3 +1,5 @@
+**homeAutomation**
+
 The point of this project is to automate the home as much as possible with
 some amount of NLP - purely context-based recognition.
 
