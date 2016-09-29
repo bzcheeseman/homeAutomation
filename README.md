@@ -31,6 +31,7 @@ Python - matplotlib
 Python - slacker
 Doxygen - To rebuild documentation
 Electron - To view documentation
+Slack Bot token(!!!)
 ```
 
 [slacker](https://github.com/os/slacker) has been quite useful - give them a look!
@@ -50,6 +51,7 @@ To build and run the test program:
 ```
 mkdir build && cd build
 cmake ..
+export SLACK_KEY=<your slack bot token>
 ./homeAutomation
 ```
 

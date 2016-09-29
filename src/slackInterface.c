@@ -10,7 +10,6 @@ void importInterface(interface_t *interface){
 
   setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation", 1);
   char *token = getenv("SLACK_KEY");
-  printf("%s", token);
 
   //Initialize the Interpreter
   Py_SetProgramName("/usr/local/bin/python");
