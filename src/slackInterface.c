@@ -9,16 +9,8 @@
 void importInterface(interface_t *interface){
 
   setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation", 1);
-  char *key = getenv("SLACK_KEY");
-  char token[42];
-  char encrypted[43] = "\x19\x1f\xc\x57\x4f\x45\x4d\x5e\x59\x4a\x5c\x40\x59\x58\x5b\x57\x5d\x45\x72\x1b\x5\x0\x16\x5b"
-          "\x41\x5\x4b\x3d\x29\x1f\x9\x25\x22\x4d\x14\x20\x22\x2c\x1a\x4f\x1a\x73";
-  for (int i = 0;  i < 42; i++){
-    token[i] = encrypted[i]^key[i%15];
-  }
-
-//  fprintf(stderr, token);
-//  fprintf(stderr, "\n");
+  char *token = getenv("SLACK_KEY");
+  printf("%s", token);
 
   //Initialize the Interpreter
   Py_SetProgramName("/usr/local/bin/python");

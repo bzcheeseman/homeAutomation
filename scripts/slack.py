@@ -2,6 +2,21 @@
 # Created by Aman LaChapelle on 8/14/16.
 #
 
+'''
+homeAutomation
+Copyright (C) 2016  Aman LaChapelle
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+'''
+
 
 import slacker as sl
 import logging
@@ -57,9 +72,6 @@ class SlackServer(object):
         self.requests = 0
 
         self.quiet = quiet
-
-        # token = "xoxb-69173535956-1Gyvty58l8QHqhUVxvSVCt6s"
-
 
         self.log = logging.getLogger("SlackServer")
 
