@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['committolog',['commitToLog',['../commands_parsing_8c.html#a4af725e9a5cd10ffafb375ac86c1f525',1,'commitToLog(command_t *commands, char *filename):&#160;commandsParsing.c'],['../commands_parsing_8h.html#a4af725e9a5cd10ffafb375ac86c1f525',1,'commitToLog(command_t *commands, char *filename):&#160;commandsParsing.c']]],
+  ['coorddescent',['coordDescent',['../classification_machine_8c.html#acfd72bed6a07ec5c940923aa4fcb4839',1,'coordDescent(vector_t **data, double *y, long lenData, double tol, double C, double(*kernelFunction)(const vector_t *, const vector_t *), vector_t *transformFunction(const vector_t *)):&#160;classificationMachine.c'],['../classification_machine_8h.html#acfd72bed6a07ec5c940923aa4fcb4839',1,'coordDescent(vector_t **data, double *y, long lenData, double tol, double C, double(*kernelFunction)(const vector_t *, const vector_t *), vector_t *transformFunction(const vector_t *)):&#160;classificationMachine.c']]],
+  ['copyvector',['copyVector',['../vector_ops_8c.html#a6b3c7bf9f7158ceb595541024911f18b',1,'copyVector(vector_t *vec):&#160;vectorOps.c'],['../vector_ops_8h.html#a6b3c7bf9f7158ceb595541024911f18b',1,'copyVector(vector_t *vec):&#160;vectorOps.c']]]
+];
