@@ -21,7 +21,7 @@ being that it would be useful on an Arduino or other similar integrated chip pro
 It makes use of Python integration for Slack utilities and plotting SVM
 results, since it's still untested I'm not sure if those will cause a significant
 slowdown on a small chip.  My hope is that it won't simply because we 
-aren't starting the Python interpreter.
+are using a small subset of Python.
 
 
 
