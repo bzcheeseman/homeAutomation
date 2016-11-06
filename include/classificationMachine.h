@@ -123,49 +123,25 @@ void deleteBag(map_t *bag);
 //} svm_t ;
 
 typedef struct {
+  double gamma;
+  double r;
+  double d;
+} kernelParams_t;
+
+typedef double(*kernelFunc)(const vector_t *, const vector_t *, kernelParams_t);
+typedef vector_t*(*transformFunc)(const vector_t *);
+
+typedef struct {
   vector_t *alphas;
   vector_t *w;
   double b;
-  double (*kernelFunction)(const vector_t *, const vector_t *);
+  kernelFunc kernelFunction;
+  kernelParams_t params;
 } svm_t ;
 
-/**
- * Basic implementation of pegasos algorithm from:
- *              Pegasos: Primal Estimated sub-GrAdient SOlver for SVM by Shalev-Shwartz, et. al.
- *
- * Literally copied the algorithm directly.
- *
- * Maybe it works, highly dependent on the range of the data?  It's a little odd maybe?  Also added the C parameter
- *
- * @param S The input points (a list of vectors x)
- * @param y The correct outputs for training (a list of numbers y)
- * @param lambda Roughly the inverse of the learning rate
- * @param C A scaling factor that allows for data that's of limited range.  Around 5-10 works well here it seems like.
- * @param T The number of iterations to perform
- * @param k The length of subsets to be used
- * @param lenS The length of the input points matrix (how many points there are)
- */
-svm_t *pegasos(vector_t **S, double *y, double lambda, double C, int T, size_t k, size_t lenS);
+double poly(const vector_t *vec, const vector_t *other, kernelParams_t params);
 
-double max(double first, double second);
-double min(double first, double second);
-
-/**
- * b is blowing up for some reason, I dunno wtf is happening - need to step through (with debugger?)
- * removed the subtracting of Ei/Ej - this might be bad, but it seems to be working and I can't figure out how else to fix it
- * english brown corpus
- *
- * @param C The margin of error - soft margin so the softness of the margin.  Too small and it goes haywire
- * @param tol The tolerance of the thing - set to something small ~ 1e-4
- * @param max_passes Max passes to take in optimizing
- * @param data Training data
- * @param y Expected outcomes from training data
- * @param lenData Length of the training dataset
- * @param kernelFunction Callback to the kernel function - testing with a simple inner product
- * @return svm_t that holds the kernel function and other relevant data.
- */
-svm_t *smoAlgorithm(double C, double tol, long max_passes, vector_t **data, double *y, long lenData,
-                    double (*kernelFunction)(const vector_t *, const vector_t *));
+double gaussian(vector_t *vec, const vector_t *other, kernelParams_t params);
 
 /**
  * Implements the coordinate descent algorithm.  Really like this one - seems to work really really well.
@@ -183,8 +159,7 @@ svm_t *smoAlgorithm(double C, double tol, long max_passes, vector_t **data, doub
  * @return
  */
 svm_t *coordDescent(vector_t **data, double *y, long lenData, double tol, double C,
-                    double (*kernelFunction)(const vector_t *, const vector_t *),
-                    vector_t *transformFunction(const vector_t *));
+                    kernelFunc kernel, kernelParams_t params);
 
 int prediction(svm_t *params, vector_t *testVector);
 

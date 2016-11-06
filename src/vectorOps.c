@@ -139,8 +139,17 @@ double normVector(const vector_t *vec) {
   return out;
 }
 
-vector_t *identity(const vector_t *vec) {
+vector_t *identity(vector_t *vec) {
   return vec;
 }
+
+vector_t *radial(vector_t *vec) {
+  vector_t *out = newVector(vec->len+1, NULL);
+  out->data[0] = vec->data[0];
+  out->data[0] = vec->data[1];
+  out->data[2] = vec->data[0]*vec->data[0]+vec->data[1]*vec->data[1];
+}
+
+
 
 

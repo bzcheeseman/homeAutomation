@@ -150,70 +150,70 @@ void deleteBag(map_t *bag) {
   free(bag);
 }
 
-svm_t *pegasos(vector_t **S, double *y, double lambda, double C, int T, size_t k, size_t lenS) {
-
-  svm_t *out = malloc(sizeof(svm_t));
-
-  size_t size = S[0]->len;
-  out->w = newVector(size, NULL);
-
-
-  vector_t *w = newVector(size, NULL);
-  for (int i = 0; i < size; i++){ //init w
-    w->data[i] = 1./(sqrt(lambda) * (double)size);
-  }
-
-  for (int t = 1; t <= T; t++){
-
-    vector_t *sum = newVector(size, NULL); //new sum vector for each iteration of t
-    vector_t **Aplus = calloc(lenS, sizeof(vector_t *)); //create the Aplus matrix
-
-    for (int j = 0; j < k; j++){
-
-      int chooseS = (int) (rand() % lenS); //choose a sample
-
-      if (y[chooseS]*(innerProduct(S[chooseS], w)) < 1.){ //if the inner product of the sample and w is less than one then
-                                                     //copy it over
-        Aplus[j] = newVector(S[chooseS]->len, S[chooseS]->data);
-
-        scalarMultiply(Aplus[j], y[chooseS]); //scale the copied vector
-        addVector(sum, Aplus[j]); //add it to the sum
-
-      }
-
-    }
-
-    double eta_t = 1./(lambda * (double)t); //calculate eta and w
-    scalarMultiply(w, (1.- eta_t * lambda));
-
-    scalarMultiply(sum, eta_t/k);
-
-    addVector(w, sum); //Already added the scaled previous w, now add the sum - this is w_{t+1/2}
-
-    if (1. < ((1./sqrt(lambda))/normVector(w)) ){ //if 1 < norm of scaled w_{t+1/2}, return w_{t+1/2} = w_{t+1}
-      ;
-    }
-    else if (1. > ((1./sqrt(lambda))/normVector(w))){ //if norm of w_{t+1/2} < 1 rescale w, return w_{t+1}
-      scalarMultiply(w, ( (1./sqrt(lambda))/normVector(w) ));
-    }
-
-
-    //clean up!
-    deleteVector(sum);
-//    for (int i = 0; i < lenS; i++){
-//      deleteVector(Aplus[i]);
+//svm_t *pegasos(vector_t **S, double *y, double lambda, double C, int T, size_t k, size_t lenS) {
+//
+//  svm_t *out = malloc(sizeof(svm_t));
+//
+//  size_t size = S[0]->len;
+//  out->w = newVector(size, NULL);
+//
+//
+//  vector_t *w = newVector(size, NULL);
+//  for (int i = 0; i < size; i++){ //init w
+//    w->data[i] = 1./(sqrt(lambda) * (double)size);
+//  }
+//
+//  for (int t = 1; t <= T; t++){
+//
+//    vector_t *sum = newVector(size, NULL); //new sum vector for each iteration of t
+//    vector_t **Aplus = calloc(lenS, sizeof(vector_t *)); //create the Aplus matrix
+//
+//    for (int j = 0; j < k; j++){
+//
+//      int chooseS = (int) (rand() % lenS); //choose a sample
+//
+//      if (y[chooseS]*(innerProduct(S[chooseS], w)) < 1.){ //if the inner product of the sample and w is less than one then
+//                                                     //copy it over
+//        Aplus[j] = newVector(S[chooseS]->len, S[chooseS]->data);
+//
+//        scalarMultiply(Aplus[j], y[chooseS]); //scale the copied vector
+//        addVector(sum, Aplus[j]); //add it to the sum
+//
+//      }
+//
 //    }
-    free(Aplus);
-  }
-
-
-  out->kernelFunction = innerProduct;
-  out->w = w;
-
-  //return whichever w is the correct one, the rescaled one or the non-rescaled one.
-  return out;
-
-}
+//
+//    double eta_t = 1./(lambda * (double)t); //calculate eta and w
+//    scalarMultiply(w, (1.- eta_t * lambda));
+//
+//    scalarMultiply(sum, eta_t/k);
+//
+//    addVector(w, sum); //Already added the scaled previous w, now add the sum - this is w_{t+1/2}
+//
+//    if (1. < ((1./sqrt(lambda))/normVector(w)) ){ //if 1 < norm of scaled w_{t+1/2}, return w_{t+1/2} = w_{t+1}
+//      ;
+//    }
+//    else if (1. > ((1./sqrt(lambda))/normVector(w))){ //if norm of w_{t+1/2} < 1 rescale w, return w_{t+1}
+//      scalarMultiply(w, ( (1./sqrt(lambda))/normVector(w) ));
+//    }
+//
+//
+//    //clean up!
+//    deleteVector(sum);
+////    for (int i = 0; i < lenS; i++){
+////      deleteVector(Aplus[i]);
+////    }
+//    free(Aplus);
+//  }
+//
+//
+//  out->kernelFunction = innerProduct;
+//  out->w = w;
+//
+//  //return whichever w is the correct one, the rescaled one or the non-rescaled one.
+//  return out;
+//
+//}
 
 double max(double first, double second) {
   if (first > second){
@@ -233,150 +233,159 @@ double min(double first, double second) {
   }
 }
 
-svm_t *smoAlgorithm(double C, double tol, long max_passes, vector_t **data, double *y, long lenData,
-                    double (*kernelFunction)(const vector_t *, const vector_t *)) {
+//svm_t *smoAlgorithm(double C, double tol, long max_passes, vector_t **data, double *y, long lenData,
+//                    double (*kernelFunction)(const vector_t *, const vector_t *)) {
+//
+//  svm_t *out = malloc(sizeof(svm_t));
+//
+//  out->kernelFunction = kernelFunction; // stuff for the prediction function
+//
+//  out->alphas = newVector((size_t)lenData, NULL); //init alphas to zero
+//  out->b = 0;
+//
+//  svm_t *old = malloc(sizeof(svm_t));
+//  old->alphas = newVector((size_t)lenData, NULL); //old alphas
+//  old->b = 0;
+//
+//  long passes = 0;
+//
+//  while (passes < max_passes){
+//    long num_changed_alphas = 0;
+//    for (int i = 0; i < lenData; i++){
+//
+//      double Ei; //Ei is exploding... something is wrong
+//      double f_xi = 0;
+//
+//      for (int l = 0; l < lenData; l++){ //calculate f(xi)
+//        f_xi += out->alphas->data[l] * y[l] * kernelFunction(data[l], data[i]) + out->b;
+//      }
+//
+////      double f_xi = out->alphas->data[i] * y[i] * kernelFunction(data[i], data[i]) + out->b;
+//
+//      Ei = f_xi - y[i];
+//
+//      if ((y[i]*Ei < -tol && out->alphas->data[i] < C) || (y[i]*Ei > tol && out->alphas->data[i] > 0.0)){
+//        long j = rand() % lenData;
+//        if (j == i){
+//          j = rand() % lenData;
+//        }
+//
+//        double Ej;
+//        double f_xj = 0;
+//
+//        //problem is in alphas?  They're bounded though...as is the kernel function...just out->b isn't
+//
+//        for (int m = 0; m < lenData; m++){ //calculate f(xi)
+//          f_xj += out->alphas->data[m] * y[m] * kernelFunction(data[m], data[j]) + out->b;
+//        }
+//
+////        double f_xj = out->alphas->data[j] * y[j] * kernelFunction(data[j], data[i]) + out->b;
+//
+//        Ej = f_xj - y[j];
+//
+//        old->alphas->data[i] = out->alphas->data[i];
+//        old->alphas->data[j] = out->alphas->data[j];
+//
+//        double L, H;
+//
+//        if (y[i] == y[j]){
+//          L = max(0.0, out->alphas->data[i] + out->alphas->data[j] - C);
+//          H = min(C, out->alphas->data[i] + out->alphas->data[j]);
+//        }
+//        else{
+//          L = max(0.0, out->alphas->data[j] - out->alphas->data[i]);
+//          H = min(C, C + out->alphas->data[j] - out->alphas->data[i]);
+//        }
+//
+//        if (L == H){
+//          continue;
+//        }
+//
+//        double eta = 2.*kernelFunction(data[i], data[j]) - kernelFunction(data[i], data[i]) - kernelFunction(data[j], data[j]);
+//        if (eta >= 0){
+//          continue;
+//        }
+//
+//        out->alphas->data[j] -= y[j] * (Ei - Ej)/eta; //update alpha_j
+//
+//        if (out->alphas->data[j] > H){
+//          out->alphas->data[j] = H;
+//        }
+//        else if (out->alphas->data[j] <= H && out->alphas->data[j] >= L){
+//          ;
+//        }
+//        else if (out->alphas->data[j] < L){
+//          out->alphas->data[j] = L;
+//        }
+//
+//        //now alpha_j is clipped and updated
+//
+//        if (fabs( (out->alphas->data[j] - old->alphas->data[j]) ) < 1e-5){
+//          continue;
+//        }
+//
+//        out->alphas->data[i] += y[i] * y[j] * (old->alphas->data[j] - out->alphas->data[j]);
+//
+//        double b1 = out->b - //Ei -
+//                y[i]*(out->alphas->data[i] - old->alphas->data[i])*kernelFunction(data[i], data[i])
+//                    - y[j]*(out->alphas->data[j] - old->alphas->data[j])*kernelFunction(data[i], data[j]);
+//        double b2 = out->b - //Ej -
+//                    y[i]*(out->alphas->data[i] - old->alphas->data[i])*kernelFunction(data[i], data[j])
+//                    - y[j]*(out->alphas->data[j] - old->alphas->data[j])*kernelFunction(data[j], data[j]);
+//
+//        if (0 < out->alphas->data[i] && out->alphas->data[i] < C){
+//          out->b = b1;
+//        }
+//        else if (0 < out->alphas->data[j] && out->alphas->data[j] < C){
+//          out->b = b2;
+//        }
+//        else{
+//          out->b = 0.5 * (b1 + b2);
+//        }
+//
+//        Ei = 0;
+//        Ej = 0;
+//        b1 = 0;
+//        b2 = 0;
+//
+//        num_changed_alphas++;
+//      }
+//    }
+//    if (num_changed_alphas == 0){
+//      passes++;
+//    }
+//    else{
+//      passes = 0;
+//    }
+//
+//  }
+//
+//  out->w = newVector(2, NULL);
+//  for (int i = 0; i < lenData; i++){
+//    vector_t *copy = copyVector(data[i]);
+//    scalarMultiply(copy, y[i]*out->alphas->data[i]);
+//    addVector(out->w, copy);
+//  }
+//
+//  return out;
+//
+//}
 
-  svm_t *out = malloc(sizeof(svm_t));
-
-  out->kernelFunction = kernelFunction; // stuff for the prediction function
-
-  out->alphas = newVector((size_t)lenData, NULL); //init alphas to zero
-  out->b = 0;
-
-  svm_t *old = malloc(sizeof(svm_t));
-  old->alphas = newVector((size_t)lenData, NULL); //old alphas
-  old->b = 0;
-
-  long passes = 0;
-
-  while (passes < max_passes){
-    long num_changed_alphas = 0;
-    for (int i = 0; i < lenData; i++){
-
-      double Ei; //Ei is exploding... something is wrong
-      double f_xi = 0;
-
-      for (int l = 0; l < lenData; l++){ //calculate f(xi)
-        f_xi += out->alphas->data[l] * y[l] * kernelFunction(data[l], data[i]) + out->b;
-      }
-
-//      double f_xi = out->alphas->data[i] * y[i] * kernelFunction(data[i], data[i]) + out->b;
-
-      Ei = f_xi - y[i];
-
-      if ((y[i]*Ei < -tol && out->alphas->data[i] < C) || (y[i]*Ei > tol && out->alphas->data[i] > 0.0)){
-        long j = rand() % lenData;
-        if (j == i){
-          j = rand() % lenData;
-        }
-
-        double Ej;
-        double f_xj = 0;
-
-        //problem is in alphas?  They're bounded though...as is the kernel function...just out->b isn't
-
-        for (int m = 0; m < lenData; m++){ //calculate f(xi)
-          f_xj += out->alphas->data[m] * y[m] * kernelFunction(data[m], data[j]) + out->b;
-        }
-
-//        double f_xj = out->alphas->data[j] * y[j] * kernelFunction(data[j], data[i]) + out->b;
-
-        Ej = f_xj - y[j];
-
-        old->alphas->data[i] = out->alphas->data[i];
-        old->alphas->data[j] = out->alphas->data[j];
-
-        double L, H;
-
-        if (y[i] == y[j]){
-          L = max(0.0, out->alphas->data[i] + out->alphas->data[j] - C);
-          H = min(C, out->alphas->data[i] + out->alphas->data[j]);
-        }
-        else{
-          L = max(0.0, out->alphas->data[j] - out->alphas->data[i]);
-          H = min(C, C + out->alphas->data[j] - out->alphas->data[i]);
-        }
-
-        if (L == H){
-          continue;
-        }
-
-        double eta = 2.*kernelFunction(data[i], data[j]) - kernelFunction(data[i], data[i]) - kernelFunction(data[j], data[j]);
-        if (eta >= 0){
-          continue;
-        }
-
-        out->alphas->data[j] -= y[j] * (Ei - Ej)/eta; //update alpha_j
-
-        if (out->alphas->data[j] > H){
-          out->alphas->data[j] = H;
-        }
-        else if (out->alphas->data[j] <= H && out->alphas->data[j] >= L){
-          ;
-        }
-        else if (out->alphas->data[j] < L){
-          out->alphas->data[j] = L;
-        }
-
-        //now alpha_j is clipped and updated
-
-        if (fabs( (out->alphas->data[j] - old->alphas->data[j]) ) < 1e-5){
-          continue;
-        }
-
-        out->alphas->data[i] += y[i] * y[j] * (old->alphas->data[j] - out->alphas->data[j]);
-
-        double b1 = out->b - //Ei -
-                y[i]*(out->alphas->data[i] - old->alphas->data[i])*kernelFunction(data[i], data[i])
-                    - y[j]*(out->alphas->data[j] - old->alphas->data[j])*kernelFunction(data[i], data[j]);
-        double b2 = out->b - //Ej -
-                    y[i]*(out->alphas->data[i] - old->alphas->data[i])*kernelFunction(data[i], data[j])
-                    - y[j]*(out->alphas->data[j] - old->alphas->data[j])*kernelFunction(data[j], data[j]);
-
-        if (0 < out->alphas->data[i] && out->alphas->data[i] < C){
-          out->b = b1;
-        }
-        else if (0 < out->alphas->data[j] && out->alphas->data[j] < C){
-          out->b = b2;
-        }
-        else{
-          out->b = 0.5 * (b1 + b2);
-        }
-
-        Ei = 0;
-        Ej = 0;
-        b1 = 0;
-        b2 = 0;
-
-        num_changed_alphas++;
-      }
-    }
-    if (num_changed_alphas == 0){
-      passes++;
-    }
-    else{
-      passes = 0;
-    }
-
-  }
-
-  out->w = newVector(2, NULL);
-  for (int i = 0; i < lenData; i++){
-    vector_t *copy = copyVector(data[i]);
-    scalarMultiply(copy, y[i]*out->alphas->data[i]);
-    addVector(out->w, copy);
-  }
-
-  return out;
-
+double gaussian(vector_t *vec, const vector_t *other, kernelParams_t params) {
+  subVector(vec, other);
+  return exp(-params.gamma*pow(normVector(vec), 2));
 }
 
-int prediction(svm_t *params, vector_t *testVector) {
-  double fx = params->kernelFunction(params->w, testVector) + params->b;
-  if (fx > 1e-5){
+double poly(const vector_t *vec, const vector_t *other, kernelParams_t params) {
+  return pow(params.r + params.gamma*innerProduct(vec, other), params.d);
+}
+
+int prediction(svm_t *svm, vector_t *testVector) {
+  double fx = svm->kernelFunction(testVector, svm->w, svm->params) + svm->b;
+  if (fx > 1e-10){
     return 1;
   }
-  else if (fx < -1e-5){
+  else if (fx < -1e-10){
     return -1;
   }
   else{
@@ -384,65 +393,67 @@ int prediction(svm_t *params, vector_t *testVector) {
   }
 }
 
-svm_t *coordDescent(vector_t **data, double *y, long lenData, double tol, double C,
-                    double (*kernelFunction)(const vector_t *, const vector_t *),
-                    vector_t *transformFunction(const vector_t *)) {
+svm_t *coordDescent(vector_t **data, double *y, long lenData, double tol, double C, kernelFunc kernel, kernelParams_t params) {
+
   svm_t *out = malloc(sizeof(svm_t));
 
+  size_t w_dim = data[0]->len + 1;
+
   out->alphas = newVector(lenData, NULL);
-  out->kernelFunction = kernelFunction;
-  out->w = newVector(3, NULL);
-//  out->b = 0;
+  out->kernelFunction = kernel;
+  out->w = newVector(w_dim, NULL);
+  out->params = params;
 
   int done = 0;
   int passes = 0;
-  int max_passes = 100;
+  int max_passes = 10000;
 
   while (done == 0 && passes < max_passes){
     for (int i = 0; i < lenData; i++){
-      double dat[3] = {data[i]->data[0], data[i]->data[1], 1.0};
-      vector_t *copyData = newVector(3, dat);
-      copyData = transformFunction(copyData);
+      vector_t *data_i = newVector(w_dim, data[i]->data);
+      data_i->data[w_dim-1] = 1.0;
 
-      double g = y[i]*kernelFunction(copyData, out->w) - 1.0;
-      double alphaprime = min( max( out->alphas->data[i] - g/(y[i]*y[i]*kernelFunction(copyData, copyData)), 0 ), C );
+      //Lagrange multiplier update rule
+      double g = y[i]*kernel(data_i, out->w, params) - 1.;
+      double Qii = y[i]*y[i]*kernel(data_i, data_i, params);
+      double alphaprime = min( max( out->alphas->data[i] - g/Qii, 0 ), C );
 
-      scalarMultiply(copyData, y[i]*(alphaprime - out->alphas->data[i]));
-      addVector(out->w, copyData);
+      //Update w
+      scalarMultiply(data_i, y[i]*(alphaprime - out->alphas->data[i]));
+      addVector(out->w, data_i);
 
+      //update multiplier
       out->alphas->data[i] = alphaprime;
-
-
-//      double g = y[i]*kernelFunction(data[i], out->w) - 1.0;
-//
-//      double alphaprime = min( max( out->alphas->data[i] - g/(y[i]*y[i]*kernelFunction(data[i], data[i])), 0 ), C );
-//      vector_t *dataCopy = copyVector(data[i]);
-//      scalarMultiply(dataCopy, y[i]*(alphaprime - out->alphas->data[i]));
-//      addVector(out->w, dataCopy);
-//
-//      out->alphas->data[i] = alphaprime;
     }
 
-    for (int i = 0; i < lenData; i++){
-      if (out->alphas->data[i] > tol){
-        done = 0;
-      }
-      else if (out->alphas->data[i] < tol && i != lenData-1){
-        done = 1;
-      }
-      else if (done == 1 && i == lenData-1){
-        ;
-      }
+    if (normVector(out->alphas) <= C){
+      done = 1;
     }
+    else{
+      done = 0;
+    }
+
+//    for (int i = 0; i < lenData; i++){
+//      if (fabs(out->alphas->data[i]) <= C){
+//        done = 1;
+//      }
+//      else{
+//        done = 0;
+//      }
+//    }
     passes++;
   }
 
-  double outdata[2] = {out->w->data[0], out->w->data[1]};
-  out->b = out->w->data[2];
-  out->w = newVector(2, outdata);
+  double outdata[w_dim-1];
+  for (int i = 0; i < w_dim; i++){
+    outdata[i] = out->w->data[i];
+  }
+  out->b = out->w->data[w_dim];
+  out->w = newVector(w_dim-1, outdata);
 
   return out;
 }
+
 
 
 

@@ -134,7 +134,9 @@ void subVector(vector_t *vec1, const vector_t *vec2);
  */
 double normVector(const vector_t *vec);
 
-vector_t *identity(const vector_t *vec);
+vector_t *identity(vector_t *vec);
+
+vector_t *radial(vector_t *vec);
 
 
 #endif //HOMEAUTOMATION_VECTOROPS_H
