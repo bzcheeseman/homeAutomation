@@ -87,9 +87,9 @@ int main(){
   clock_t t = clock();
 
   kernelParams_t params;
-  params.d = 4.;
-  params.r = 0.2;
-  params.gamma = 0.05;
+  params.d = 1.;
+  params.r = 0.0;
+  params.gamma = 1.;
   svm_t *svmparams = coordDescent(S, y, len, 1e-5, 0.01, poly, params);
   t = clock() - t;
   double time_taken = (double)t/CLOCKS_PER_SEC;

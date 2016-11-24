@@ -426,21 +426,14 @@ svm_t *coordDescent(vector_t **data, double *y, long lenData, double tol, double
       out->alphas->data[i] = alphaprime;
     }
 
-    if (normVector(out->alphas) <= C){
-      done = 1;
+    for (int i = 0; i < lenData; i++){
+      if (fabs(out->alphas->data[i]) <= C){
+        done = 1;
+      }
+      else{
+        done = 0;
+      }
     }
-    else{
-      done = 0;
-    }
-
-//    for (int i = 0; i < lenData; i++){
-//      if (fabs(out->alphas->data[i]) <= C){
-//        done = 1;
-//      }
-//      else{
-//        done = 0;
-//      }
-//    }
     passes++;
   }
 

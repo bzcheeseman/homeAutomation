@@ -31,6 +31,7 @@
 
 /*
  * TODO: Fix this to classify bigrams somehow
+ * TODO: Apply conjugate gradient to SVM?
  */
 
 /**

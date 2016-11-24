@@ -134,7 +134,7 @@ void plotArray(vector_t *array, int dim) {
   setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation", 1);
 
   //Init interpreter
-  Py_SetProgramName("/usr/local/bin/python");
+  Py_SetProgramName("/usr/local/bin/ipython");
   Py_Initialize();
 
   PyObject *plotterName = PyString_FromString("scripts.plotting");
