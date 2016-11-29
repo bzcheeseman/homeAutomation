@@ -121,7 +121,7 @@ map_t *importfromFile(char *filename) {
   int i = 0;
   char *buf = NULL;
   size_t l = 0;
-  ssize_t read = 0;
+  size_t read = 0;
 
   while ((read = getline(&buf, &l, log)) != -1){
     char *buf2;
