@@ -17,8 +17,10 @@ if(DOXYGEN_FOUND)
             )
 endif(DOXYGEN_FOUND)
 
-set(PYTHON_INCLUDE_DIR /usr/local/Frameworks/Python.framework/Headers)
-set(PYTHON_LIBRARY /usr/local/Frameworks/Python.framework)
+find_package(PythonLibs 2.5)
+find_package(PythonInterp 2.5)
+#set(PYTHON_INCLUDE_DIR /usr/local/Frameworks/Python.framework/Headers)
+#set(PYTHON_LIBRARY /usr/local/Frameworks/Python.framework)
 
 include_directories(${PYTHON_INCLUDE_DIR})
 
