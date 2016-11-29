@@ -40,6 +40,10 @@
  * Holds:
  *  - The actual data in the vector
  *  - The length of the vector, to avoid counting each time
+ * 
+ * Note that we can represent a square matrix in its flattened form as a vector with
+ * the index representation m(i,j) == v[i+m_cols*j], and with the length set to 
+ * m_rows*m_cols = m_rows^2
  */
 typedef struct {
   //!The data in the vector - the numbers (in the form of a double(!))

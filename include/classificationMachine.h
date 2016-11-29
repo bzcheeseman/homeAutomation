@@ -148,6 +148,8 @@ double gaussian(vector_t *vec, const vector_t *other, kernelParams_t params);
  * Implements the coordinate descent algorithm.  Really like this one - seems to work really really well.
  * Still need to test some kernel functions and stuff, but I'm happy overall for now.  Maybe varargs for the kernel function?
  * Need some sort of signature for that - needs like the gamma factor for the gaussian kernel...
+ * 
+ * change to a matrix-free method for the kernel/multiplications?  That could be real useful...
  *
  * check out libsvm - look at "svm.h" and readme in /usr/local/Cellar/libsvm/3.21/README
  *
@@ -161,6 +163,9 @@ double gaussian(vector_t *vec, const vector_t *other, kernelParams_t params);
  */
 svm_t *coordDescent(vector_t **data, double *y, long lenData, double tol, double C,
                     kernelFunc kernel, kernelParams_t params);
+                    
+svm_t *conjugateGradient(vector_t **data, double *y, long lendata, double tol, 
+                          double C, kernelFunc kernel, kernelParams_t params);
 
 int prediction(svm_t *params, vector_t *testVector);
 
