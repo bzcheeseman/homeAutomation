@@ -50,7 +50,7 @@ but it's fun to play with.
 To build and run the test program:
 ```
 mkdir build && cd build
-cmake ..
+cmake .. && make
 export SLACK_KEY=<your slack bot token>
 ./homeAutomation
 ```
