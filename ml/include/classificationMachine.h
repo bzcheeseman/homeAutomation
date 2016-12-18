@@ -26,72 +26,12 @@
 #include <string.h>
 
 //Homemade vector operations - tried and tested
-#include "vectorOps.h"
-#include "hashTable.h"
+#include "../../utilities/include/vector.h"
 
 /*
  * TODO: Fix this to classify bigrams somehow
  * TODO: Apply conjugate gradient to SVM?
  */
-
-/**
- * @file classificationMachine.h
- * @brief The actual classifier and associated helper functions
- *
- * Holds a simple SVM/Naive Bayes implementation and all the associated helper functions.  Splits a given phrase
- * into bigrams and calculates bigram frequency in the phrase.  This will allow us to make use of the SVM/Naive Bayes
- * implementation to classify bigrams and determine which function to execute based on the word classification.
- *
- * Will also likely need a decision tree model or something in order to translate command bigrams to functions.
- */
-
-/**
- *
- * @param phrase The phrase to be split into bigrams
- * @param bag Usually called with NULL here - used for the addPhrase(char*,map_t*) function.
- * @return A new (or modifies the old one if it's there) word bag that contains the bigrams of the inputted phrase.
- */
-map_t *mapBigrams(char *phrase, map_t *bag);
-
-/**
- * Adds a phrase to the word bag - will come in handy if we're reading from a file, for example.  Also means we can
- * build up a nice big word bag.
- *
- * Basically a wrapper for mapBigrams(char*,map_t*)
- *
- * @param phrase Phrase to be added to the word bag
- * @param bag The bag to which we add the phrase
- */
-void addPhrase(char *phrase, map_t *bag);
-
-/**
- * Prints everything about a wordbag_t so that the results can be verified by a human if required.
- *
- * @param bag map_t to be printed
- */
-void printBag(map_t *bag);
-
-/**
- * Logs the wordbag to a file - to build up a training dataset if we need one, quickly.
- * Writes the first character of the file to be the number of entries.
- *
- * @param bag Bag to log to file
- * @param filename Name of the file, defaults to logging/wordbag.log
- */
-void logtoFile(map_t *bag, char *filename);
-
-/**
- * Imports a word bag from a saved file - creates a new one.  ONLY WORKS ON BAGS WRITTEN WITH logtoFile(wordbag_t*, char*)
- *
- * @param filename The name of the file, defaults to logging/wordbag.log
- * @return A new wordbag_t object to be used later.
- */
-map_t *importfromFile(char *filename);
-
-void deleteBag(map_t *bag);
-
-
-
 
 /*
  * SVM is a test implementation, will be designed around manual input, then once it definitely works will
@@ -163,11 +103,10 @@ double gaussian(vector_t *vec, const vector_t *other, kernelParams_t params);
  */
 svm_t *coordDescent(vector_t **data, double *y, long lenData, double tol, double C,
                     kernelFunc kernel, kernelParams_t params);
-                    
-svm_t *conjugateGradient(vector_t **data, double *y, long lendata, double tol, 
-                          double C, kernelFunc kernel, kernelParams_t params);
 
 int prediction(svm_t *params, vector_t *testVector);
+
+//Need a word2vec thing
 
 
 /*

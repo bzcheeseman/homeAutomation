@@ -23,7 +23,7 @@
 #include <Python.h>
 #include <stdio.h>
 #include <unistd.h>
-#include "vectorOps.h"
+#include "../../utilities/include/vector.h"
 
 /*
  * TODO: Documentation for this .h file

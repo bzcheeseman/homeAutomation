@@ -8,13 +8,13 @@ void plotData(vector_t *xdata, vector_t *ydata) { //perform xdecref's etc.
 
   assert(xdata->len == ydata->len);
 
-  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation", 1);
+  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation/python/scripts", 1);
 
   //Init interpreter
   Py_SetProgramName("/usr/local/bin/python");
   Py_Initialize();
 
-  PyObject *plotterName = PyString_FromString("scripts.plotting");
+  PyObject *plotterName = PyString_FromString("plotting");
 
   PyObject *plotter = PyImport_Import(plotterName); //import plotter
   Py_XDECREF(plotterName); //decref the name
@@ -51,13 +51,13 @@ void plotData(vector_t *xdata, vector_t *ydata) { //perform xdecref's etc.
 }
 
 void plotLine(double m, double b) {
-  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation", 1);
+  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation/python/scripts", 1);
 
   //Init interpreter
   Py_SetProgramName("/usr/local/bin/python");
   Py_Initialize();
 
-  PyObject *plotterName = PyString_FromString("scripts.plotting");
+  PyObject *plotterName = PyString_FromString("plotting");
 
   PyObject *plotter = PyImport_Import(plotterName); //import plotter
   Py_XDECREF(plotterName); //decref the name
@@ -86,13 +86,13 @@ void plotLine(double m, double b) {
 }
 
 void plotDataLine(vector_t *xdata, vector_t *ydata, double m, double b) {
-  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation", 1);
+  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation/python/scripts", 1);
 
   //Init interpreter
   Py_SetProgramName("/usr/local/bin/python");
   Py_Initialize();
 
-  PyObject *plotterName = PyString_FromString("scripts.plotting");
+  PyObject *plotterName = PyString_FromString("plotting");
 
   PyObject *plotter = PyImport_Import(plotterName); //import plotter
   Py_XDECREF(plotterName); //decref the name
@@ -131,13 +131,13 @@ void plotDataLine(vector_t *xdata, vector_t *ydata, double m, double b) {
 }
 
 void plotArray(vector_t *array, int dim) {
-  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation", 1);
+  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation/python/scripts", 1);
 
   //Init interpreter
-  Py_SetProgramName("/usr/local/bin/ipython");
+  Py_SetProgramName("/usr/local/bin/python");
   Py_Initialize();
 
-  PyObject *plotterName = PyString_FromString("scripts.plotting");
+  PyObject *plotterName = PyString_FromString("plotting");
 
   PyObject *plotter = PyImport_Import(plotterName); //import plotter
   Py_XDECREF(plotterName); //decref the name

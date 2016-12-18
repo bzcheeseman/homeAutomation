@@ -2,7 +2,7 @@
 // Created by Aman LaChapelle on 8/21/16.
 //
 
-#include "../include/vectorOps.h"
+#include "../include/vector.h"
 
 vector_t *newVector(size_t len, double *data){
 

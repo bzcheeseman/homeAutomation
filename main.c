@@ -2,12 +2,10 @@
 // Created by Aman LaChapelle on 8/19/16.
 //
 
-#include "include/slackInterface.h"
-#include "include/commandsParsing.h"
-#include "include/classificationMachine.h"
-#include "include/vectorOps.h"
-#include "include/hashTable.h"
-#include "include/plotting.h"
+#include "ml/ml.h"
+#include "python/ha_python.h"
+#include "wordToVec/wordToVec.h"
+#include "utilities/utilities.h"
 
 int main(){
 //  interface_t *in = malloc(sizeof(interface_t));

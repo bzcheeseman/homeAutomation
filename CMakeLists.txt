@@ -1,10 +1,9 @@
-cmake_minimum_required(VERSION 2.5)
+cmake_minimum_required(VERSION 3.0)
 project(homeAutomation)
 
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -fopenmp")
-#set(CMAKE_CXX_COMPILER /usr/local/bin/g++-6)
-#set(CMAKE_C_COMPILER /usr/local/bin/gcc)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+set(CMAKE_C_COMPILER /usr/local/bin/gcc-6)
 
 find_package(Doxygen)
 
@@ -17,14 +16,14 @@ if(DOXYGEN_FOUND)
             )
 endif(DOXYGEN_FOUND)
 
-find_package(PythonLibs 2.5)
-find_package(PythonInterp 2.5)
-#set(PYTHON_INCLUDE_DIR /usr/local/Frameworks/Python.framework/Headers)
-#set(PYTHON_LIBRARY /usr/local/Frameworks/Python.framework)
+add_subdirectory(ml)
+add_subdirectory(python)
+add_subdirectory(utilities)
+add_subdirectory(wordToVec)
 
 include_directories(${PYTHON_INCLUDE_DIR})
 
-set(SOURCE_FILES src/slackInterface.c include/slackInterface.h main.c src/commandsParsing.c include/commandsParsing.h src/classificationMachine.c include/classificationMachine.h src/vectorOps.c include/vectorOps.h src/hashTable.c include/hashTable.h src/plotting.c include/plotting.h)
+set(SOURCE_FILES main.c)
 
 add_executable(homeAutomation ${SOURCE_FILES})
-target_link_libraries(homeAutomation ${PYTHON_LIBRARY})
+target_link_libraries(homeAutomation ml ha_python utilities wordToVec)
