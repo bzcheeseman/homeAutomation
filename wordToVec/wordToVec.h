@@ -25,6 +25,7 @@
 #ifndef HOMEAUTOMATION_WORD_TO_VEC_H
 #define HOMEAUTOMATION_WORD_TO_VEC_H
 
-#include "include/bigrams.h"
+#include "include/ngrams.h"
+#include "include/word_to_vec.h"
 
 #endif //HOMEAUTOMATION_WORD_TO_VEC_H

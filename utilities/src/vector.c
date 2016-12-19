@@ -139,6 +139,23 @@ double normVector(const vector_t *vec) {
   return out;
 }
 
+vector_t *softmax(const vector_t *vec){
+  double denom = 0;
+  int len = vec->len;
+
+  vector_t *out = newVector(len, NULL);
+
+  for (int i = 0; i < len; i++){
+    denom += exp(vec->data[i]);
+  }
+
+  for (int i = 0; i < len; i++){
+    out->data[i] = exp(vec->data[i])/denom;
+  }
+
+  return out;
+}
+
 vector_t *identity(vector_t *vec) {
   return vec;
 }

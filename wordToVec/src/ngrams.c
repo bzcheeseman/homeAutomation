@@ -22,66 +22,77 @@
  */
 
 
-#include "../include/bigrams.h"
+#include "../include/ngrams.h"
+#include "../../utilities/utilities.h"
 
-map_t *mapBigrams(char *phrase, map_t *bag){
+void *mapNgrams(char *phrase, size_t N, map_t *bag){
 
   size_t end = strlen(phrase);
 
-  int len = 1;
+  size_t len = 1;
   char **wordlist = malloc(sizeof(char *));
 
   char last_char = phrase[0];
-  int i, last_space;
+  int i, last_space = 0;
 
-  for (i = 0, last_space = 0; i < end; i++){
-
+  for (i = 0; i < end; i++){
     if (phrase[i] == ' ' && last_char != ' '){
-      wordlist[len-1] = calloc((size_t)(i-last_space) + 1, sizeof(char)); //malloc the new array
+      wordlist[len-1] = malloc(((size_t)(i-last_space) + 1)*sizeof(char)); //malloc the new array
 
       strncpy(wordlist[len-1], phrase+last_space, i-last_space); //copy it over
+
+      if (wordlist[len-1][0] == ' '){
+        wordlist[len-1]++;
+      }
 
       len++; //Change lengths and realloc things
       wordlist = realloc(wordlist, sizeof(char *) * len);
 
       last_space = i; //set the last space to the one we just found
     }
-
     last_char = phrase[i];
+  } //now we have the phrase split into an array of words
 
+  len--; //len ends up 1 too big
+
+  if (len < 2*N){
+    error_t *error = malloc(sizeof(error_t));
+    error->what = "len of phrase is less than N, cannot split into N-grams!";
+    return error;
   }
-
-  if (len < 2){
-    return NULL;
-  }
-
-  wordlist[len-1] = malloc( sizeof(char) * ((end-last_space) + 1) ); //alloc the last array
-
-  strncpy(wordlist[len-1], phrase+last_space, end-last_space); //copy it over
-
-  for (int j = 1; j < len; j++){  //Removing the leading spaces from words
-    wordlist[j] = wordlist[j]+1;
-  }
-
-  //Now we have all the words in the sentence split into an array - now we need to split them into the list of bigrams.
-
-  len -= 1;
 
   if (!bag){
-    bag = newMap(len<<1);
+    bag = newMap(len<<1, N);
   }
 
-  for (int ii = 0; ii < len; ii++){
+  //We need to take each word and map it to its N nearest neighbors.
+  for (size_t j = 0; j < len; j++){
 
-    size_t bufsize = strlen(wordlist[ii]) + 1 + strlen(wordlist[ii+1]) + 1; //length1 + space + length2 + \0
+    int N_forward_neighbor = j + N;
+    int N_backward_neighbor = j - N;
+    if (N_backward_neighbor < 0){
+      N_backward_neighbor = 1;
+    }
+    if (N_forward_neighbor > len-1){
+      N_forward_neighbor = len-2;
+    }
 
-    char *buf = malloc(sizeof(char) * bufsize);
+    int num_words = N_forward_neighbor - N_backward_neighbor;
 
-    strncpy(buf, wordlist[ii], strlen(wordlist[ii]));
-    strncat(buf+strlen(wordlist[ii]), " ", 1); //add trailing space to first word
-    strncat(buf+strlen(wordlist[ii])+1, wordlist[ii+1], strlen(wordlist[ii+1]));
+    char **neighbors = malloc((num_words)*sizeof(char *));
 
-    addEntry(bag, buf, (int)NULL, (long)NULL);
+    int l = 0;
+    for (int k = N_backward_neighbor; k <= N_forward_neighbor; k++){
+      if (k != j){
+        neighbors[l] = strndup(wordlist[k], strlen(wordlist[k]));
+        l++;
+      }
+      else{
+        continue;
+      }
+    }
+    addEntry(bag, wordlist[j], neighbors, NULL);
+    free(neighbors);
   }
 
   return bag;
@@ -91,7 +102,9 @@ void printBag(map_t *bag) {
   printf("\n=============================\n");
   for (int i = 0; i < bag->size; i++){
     if (bag->entries[i]->key != NULL){
-      printf("%s: %d\n", bag->entries[i]->key, bag->entries[i]->value);
+      for (int j = 0; j < bag->entries[i]->num_neighbors*2*bag->window; j++){
+        printf("%s: %s\n", bag->entries[i]->key, bag->entries[i]->neighbors[j]);
+      }
     }
   }
   printf("=============================\n");
@@ -99,7 +112,7 @@ void printBag(map_t *bag) {
 
 void addPhrase(char *phrase, map_t *bag) {
 
-  bag = mapBigrams(phrase, bag);
+  bag = mapNgrams(phrase, 2, bag);
 
   return;
 }
@@ -110,11 +123,14 @@ void logtoFile(map_t *bag, char *filename) {
   }
   FILE *log = fopen(filename, "w+");
   int end = bag->size;
-  fprintf(log, "%d\n", bag->size);
-  fprintf(log, "# Bigram \t Frequency\n");
+  fprintf(log, "%d # Bag size\n", bag->size);
+  fprintf(log, "%d # Window\n", bag->window);
+  fprintf(log, "# Word \t N-neighbors \n");
   for (int i = 0; i < end; i++){
     if (bag->entries[i]->key != NULL){
-      fprintf(log, "%s\t%d\n", bag->entries[i]->key, bag->entries[i]->value);
+      for (int j = 0; j < bag->entries[i]->num_neighbors; j++){
+        fprintf(log, "%s\t%s\n", bag->entries[i]->key, bag->entries[i]->neighbors[j]);
+      }
     }
   }
 
@@ -135,7 +151,7 @@ map_t *importfromFile(char *filename) {
   getline(&num_lines, &len, log);
 
   int length = atoi(num_lines);
-  map_t *bag = newMap(length);
+  map_t *bag = newMap(length, 2);
 
   int i = 0;
   char *buf = NULL;

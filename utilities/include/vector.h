@@ -144,6 +144,15 @@ void subVector(vector_t *vec1, const vector_t *vec2);
  */
 double normVector(const vector_t *vec);
 
+/**
+ * Takes a vector and returns the softmax version of that vector (takes
+ * exponent and sums, etc.)
+ *
+ * @param vec Vector to be softmax'ed
+ * @return A vector that is equal to the softmax of the initial vector.
+ */
+vector_t *softmax(const vector_t *vec);
+
 vector_t *identity(vector_t *vec);
 
 vector_t *radial(vector_t *vec);

@@ -25,6 +25,8 @@
 #include <limits.h>
 #include <stdio.h>
 
+#include "../utilities.h"
+
 /*
  * TODO: Fix documentation
  * TODO: Document structs
@@ -33,12 +35,14 @@
 
 typedef struct {
   char *key;
-  int value;
+  char **neighbors;
+  size_t num_neighbors;
 } entry_t ;
 
 typedef struct{
   entry_t *(*entries);
-  int size;
+  size_t size;
+  size_t window;
 } map_t ;
 
 /**
@@ -47,7 +51,7 @@ typedef struct{
  * @param size Size of the map
  * @return pointer to a new map.
  */
-map_t *newMap(int size);
+void *newMap(size_t size, size_t n_grams);
 
 /**
  * Frees memory allocated to the map/pointer.
@@ -77,7 +81,7 @@ long hashEntry(map_t *map, char *key);
  * @param frequency The integer frequency of the bigram (key)
  * @param bin There for the recursive step - usually called with NULL in that parameter.
  */
-void addEntry(map_t *map, char *key, int frequency, long bin);
+void *addEntry(map_t *map, char *key, char **neighbors, long bin);
 
 /**
  * Gets a specified entry from the key provided.
@@ -87,7 +91,7 @@ void addEntry(map_t *map, char *key, int frequency, long bin);
  * @param bin There for the recursive step - usually called with NULL in that parameter.
  * @return The int corresponding to the value of the entry corresponding to the key.
  */
-int getEntry(map_t *map, char *key, long bin);
+void *getEntry(map_t *map, char *key, long bin);
 
 /**
  * Deletes the map passed to it and returns a new map with all the same values contained in their new hashes in a new
@@ -97,7 +101,7 @@ int getEntry(map_t *map, char *key, long bin);
  * @param newsize The new size of the map
  * @return A new map that has size = newsize.
  */
-map_t *resizeMap(map_t *map, int newsize);
+map_t *resizeMap(map_t *map, size_t newsize);
 
 
 #endif //HOMEAUTOMATION_HASHTABLE_H

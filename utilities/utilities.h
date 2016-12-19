@@ -30,4 +30,8 @@
 #include "include/vector.h"
 #include "include/matrix.h"
 
+typedef struct {
+  char *what;
+} error_t ;
+
 #endif //HOMEAUTOMATION_UTILITIES_H

@@ -3,30 +3,39 @@
 //
 
 #include "../include/hashTable.h"
+#include "../utilities.h"
 
-map_t *newMap(int size){
+void *newMap(size_t size, size_t n_grams){
 
   if (!size){
-    size = 32;
+    size = 10000;
   }
 
   map_t *out = malloc(sizeof(map_t));
   if (!out){
-    return NULL;
+    error_t *error = malloc(sizeof(error_t));
+    error->what = "Malloc failed for map";
+    return error;
   }
 
-  out->entries = calloc((size_t)size, sizeof(entry_t));
+  out->entries = malloc(size*sizeof(entry_t));
   if (!out->entries){
-    return NULL;
+    error_t *error = malloc(sizeof(error_t));
+    error->what = "Malloc failed for entries";
+    return error;
   }
+
+  out->entries = malloc(size*sizeof(entry_t *));
 
   for (int i = 0; i < size; i++){
     out->entries[i] = malloc(sizeof(entry_t *));
     out->entries[i]->key = NULL;
-    out->entries[i]->value = 0;
+    out->entries[i]->neighbors = malloc(n_grams*sizeof(char *));
+    out->entries[i]->num_neighbors = 1;
   }
 
   out->size = size;
+  out->window = n_grams;
 
   return out;
 }
@@ -48,46 +57,58 @@ long hashEntry(map_t *map, char *key){
   return hash % map->size;
 }
 
-void addEntry(map_t *map, char *key, int frequency, long bin){
+void *addEntry(map_t *map, char *key, char **neighbors, long bin){
   if (!bin){
     bin = hashEntry(map, key);
   }
 
+  error_t *error = malloc(sizeof(error_t));
+
   if (map->entries[bin]->key == NULL){ //Nothing there
-    if (frequency){
-      map->entries[bin]->key = strdup(key);
-      map->entries[bin]->value = frequency;
+    map->entries[bin]->key = strndup(key, strlen(key));
+    for (int i = 0; i < 2*map->window; i++){
+      if (neighbors[i] != NULL){
+        map->entries[bin]->neighbors[i] = strndup(neighbors[i], strlen(neighbors[i]));
+      }
+      else{
+        ;
+      }
+    }
+    error->what = NULL;
+  } //num_neighbors is sent to some huge number for some reason
+  else if (strcmp(map->entries[bin]->key, key) == 0){ //in the list already just extend the neighbors list
+    map->entries[bin]->num_neighbors++; //now there are (j+1)*n_gram neighbors
+    size_t n_len = map->entries[bin]->num_neighbors;
+
+    map->entries[bin]->neighbors = realloc(map->entries[bin]->neighbors, (n_len)*map->window);
+
+    if (map->entries[bin]->neighbors){
+      for (size_t i = (n_len-1)*(map->window-1); i < n_len*(map->window-1); i++){ //add the new neighbors to the list
+        map->entries[bin]->neighbors[i] = strndup(neighbors[i-(n_len-1)*(map->window)], strlen(neighbors[i-(n_len-1)*(map->window)]));
+      }
+      error->what = NULL;
     }
     else{
-      map->entries[bin]->key = strdup(key);
-      map->entries[bin]->value++;
+      error->what = "Realloc failed in lengthening neighbors list";
     }
 
-  }
-  else if (strcmp(map->entries[bin]->key, key) == 0){ //in the list already, increment frequency
-    if (frequency){
-      map->entries[bin]->value = frequency;
-    }
-    else{
-      map->entries[bin]->value++;
-    }
   }
   else if (strcmp(map->entries[bin]->key, key) != 0){ //2 different keys with the same hash
-    bin++;
-    bin %= map->size;
-    addEntry(map, key, frequency, bin);
-  }
+    bin++; //increment bin
+    bin %= map->size; //mod it by the map size
+    addEntry(map, key, neighbors, bin); //try to add the entry again
+  } //this will cause problems if the map is completely full, but that shouldn't be a problem
 
-  return;
+  return error;
 }
 
-int getEntry(map_t *map, char *key, long bin){
+void *getEntry(map_t *map, char *key, long bin){
   if (!bin){
     bin = hashEntry(map, key);
   }
 
   if (strncmp(map->entries[bin]->key, key, strlen(key)) == 0){
-    return map->entries[bin]->value;
+    return map->entries[bin]->neighbors;
   }
   else{
     bin++;
@@ -96,13 +117,11 @@ int getEntry(map_t *map, char *key, long bin){
   }
 }
 
-map_t *resizeMap(map_t *map, int newsize) {
-  map_t *newmap = newMap(newsize);
+map_t *resizeMap(map_t *map, size_t newsize) {
+  map_t *newmap = (map_t *)newMap(newsize, map->window);
 
   for (int i = 0; i < map->size; i++){
-    if (map->entries[i]->key != NULL){
-      addEntry(newmap, map->entries[i]->key, map->entries[i]->value, (long)NULL);
-    }
+    addEntry(newmap, map->entries[i]->key, map->entries[i]->neighbors, (long)NULL);
   }
 
   deleteMap(map);

@@ -26,10 +26,16 @@
 #define HOMEAUTOMATION_BIGRAMS_H
 
 #include "../../utilities/include/hashTable.h"
+#include "../../utilities/utilities.h"
+
+/*
+ * TODO: implement context extraction instead of bigrams - will allow to train the word2vec model.
+ * TODO: Need to completely redo the way I map the n-grams
+ */
 
 /**
- * @file classificationMachine.h
- * @brief The actual classifier and associated helper functions
+ * @file ngrams.h
+ * @brief N-grams mapping functions for extracting context
  *
  * Holds a simple SVM/Naive Bayes implementation and all the associated helper functions.  Splits a given phrase
  * into bigrams and calculates bigram frequency in the phrase.  This will allow us to make use of the SVM/Naive Bayes
@@ -44,7 +50,7 @@
  * @param bag Usually called with NULL here - used for the addPhrase(char*,map_t*) function.
  * @return A new (or modifies the old one if it's there) word bag that contains the bigrams of the inputted phrase.
  */
-map_t *mapBigrams(char *phrase, map_t *bag);
+void *mapNgrams(char *phrase, size_t N, map_t *bag);
 
 /**
  * Adds a phrase to the word bag - will come in handy if we're reading from a file, for example.  Also means we can
