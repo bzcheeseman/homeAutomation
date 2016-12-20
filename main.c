@@ -30,7 +30,7 @@ int main(){
 
   map_t *bag = mapNgrams(phrase, 1, NULL);
 
-  addPhrase("well hi there", bag); //add a test phrase with a bigram already in the bag
+//  addPhrase("well hi there", 1, bag); //add a test phrase with a bigram already in the bag
 
   printBag(bag);
 

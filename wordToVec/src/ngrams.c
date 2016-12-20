@@ -79,7 +79,7 @@ void *mapNgrams(char *phrase, size_t N, map_t *bag){
 
     int num_words = N_forward_neighbor - N_backward_neighbor;
 
-    char **neighbors = malloc((num_words)*sizeof(char *));
+    char **neighbors = malloc((size_t)fmax((float)num_words, (float)1)*sizeof(char *));
 
     int l = 0;
     for (int k = N_backward_neighbor; k <= N_forward_neighbor; k++){
@@ -91,7 +91,7 @@ void *mapNgrams(char *phrase, size_t N, map_t *bag){
         continue;
       }
     }
-    addEntry(bag, wordlist[j], neighbors, NULL);
+    addEntry(bag, wordlist[j], neighbors, l, NULL);
     free(neighbors);
   }
 
@@ -102,7 +102,8 @@ void printBag(map_t *bag) {
   printf("\n=============================\n");
   for (int i = 0; i < bag->size; i++){
     if (bag->entries[i]->key != NULL){
-      for (int j = 0; j < bag->entries[i]->num_neighbors*2*bag->window; j++){
+      int num_neighbors = bag->entries[i]->num_neighbors;
+      for (int j = 0; j < num_neighbors; j++){
         printf("%s: %s\n", bag->entries[i]->key, bag->entries[i]->neighbors[j]);
       }
     }
@@ -110,9 +111,9 @@ void printBag(map_t *bag) {
   printf("=============================\n");
 }
 
-void addPhrase(char *phrase, map_t *bag) {
+void addPhrase(char *phrase, size_t window, map_t *bag) {
 
-  bag = mapNgrams(phrase, 2, bag);
+  bag = mapNgrams(phrase, window, bag);
 
   return;
 }
@@ -139,45 +140,45 @@ void logtoFile(map_t *bag, char *filename) {
   return;
 }
 
-map_t *importfromFile(char *filename) {
-  if (filename == NULL){
-    filename = "/Users/Aman/code/homeAutomation/logging/wordbag.log";
-  }
-
-  FILE *log = fopen(filename, "r+");
-
-  char *num_lines = NULL;
-  size_t len = 0;
-  getline(&num_lines, &len, log);
-
-  int length = atoi(num_lines);
-  map_t *bag = newMap(length, 2);
-
-  int i = 0;
-  char *buf = NULL;
-  size_t l = 0;
-  size_t read = 0;
-
-  while ((read = getline(&buf, &l, log)) != -1){
-    char *buf2;
-    if (read <= 2 || buf[0] == '#'){
-      ;
-    }
-    else{
-      int j = 0;
-      while (buf[j] != '\t'){
-        j++;
-      }
-      buf2 = calloc(j, sizeof(char));
-      strncpy(buf2, buf, j);
-      addEntry(bag, buf2, atoi(buf+(j+1)), (long)NULL);
-      i++;
-    }
-  }
-
-  return bag;
-
-}
+//map_t *importfromFile(char *filename) {
+//  if (filename == NULL){
+//    filename = "/Users/Aman/code/homeAutomation/logging/wordbag.log";
+//  }
+//
+//  FILE *log = fopen(filename, "r+");
+//
+//  char *num_lines = NULL;
+//  size_t len = 0;
+//  getline(&num_lines, &len, log);
+//
+//  int length = atoi(num_lines);
+//  map_t *bag = newMap(length, 2);
+//
+//  int i = 0;
+//  char *buf = NULL;
+//  size_t l = 0;
+//  size_t read = 0;
+//
+//  while ((read = getline(&buf, &l, log)) != -1){
+//    char *buf2;
+//    if (read <= 2 || buf[0] == '#'){
+//      ;
+//    }
+//    else{
+//      int j = 0;
+//      while (buf[j] != '\t'){
+//        j++;
+//      }
+//      buf2 = calloc(j, sizeof(char));
+//      strncpy(buf2, buf, j);
+//      addEntry(bag, buf2, atoi(buf+(j+1)), 2, (long)NULL);
+//      i++;
+//    }
+//  }
+//
+//  return bag;
+//
+//}
 
 void deleteBag(map_t *bag) {
   logtoFile(bag, NULL);

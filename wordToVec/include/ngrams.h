@@ -59,9 +59,10 @@ void *mapNgrams(char *phrase, size_t N, map_t *bag);
  * Basically a wrapper for mapBigrams(char*,map_t*)
  *
  * @param phrase Phrase to be added to the word bag
+ * @param window Context window
  * @param bag The bag to which we add the phrase
  */
-void addPhrase(char *phrase, map_t *bag);
+void addPhrase(char *phrase, size_t window, map_t *bag);
 
 /**
  * Prints everything about a wordbag_t so that the results can be verified by a human if required.
@@ -85,7 +86,7 @@ void logtoFile(map_t *bag, char *filename);
  * @param filename The name of the file, defaults to logging/wordbag.log
  * @return A new wordbag_t object to be used later.
  */
-map_t *importfromFile(char *filename);
+//map_t *importfromFile(char *filename);
 
 void deleteBag(map_t *bag);
 

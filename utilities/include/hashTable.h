@@ -81,7 +81,7 @@ long hashEntry(map_t *map, char *key);
  * @param frequency The integer frequency of the bigram (key)
  * @param bin There for the recursive step - usually called with NULL in that parameter.
  */
-void *addEntry(map_t *map, char *key, char **neighbors, long bin);
+void *addEntry(map_t *map, char *key, char **neighbors, size_t num_neighbors, long bin);
 
 /**
  * Gets a specified entry from the key provided.
