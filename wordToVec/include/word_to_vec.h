@@ -27,6 +27,15 @@
 
 #include "../../utilities/include/matrix.h"
 
-//word2vec implementation
+struct word_vec{
+  char *word;
+  vector_t *vector;
+};
+
+struct word_vec_table{
+  struct word_vec *list;
+};
+
+//hash words, put them into the list
 
 #endif //HOMEAUTOMATION_WORDTOVEC_H

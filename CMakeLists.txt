@@ -16,6 +16,7 @@ if(DOXYGEN_FOUND)
             )
 endif(DOXYGEN_FOUND)
 
+add_subdirectory(control)
 add_subdirectory(ml)
 add_subdirectory(python)
 add_subdirectory(utilities)
