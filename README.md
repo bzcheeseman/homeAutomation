@@ -1,39 +1,48 @@
-**homeAutomation**
-
-UPDATE THE DAMN README, AMAN
+## homeAutomation
 
 The point of this project is to automate the home as much as possible with
 some amount of NLP - purely context-based recognition.
 
-So far the parsing functions are built and most of the background mechanics
-are working as well.  Next steps will be to actually pass words to
-the SVM and see how well it does, as well as add kernel methods to
-improve classification.
+**PROJECT TODO:**
+* word2vec implementation - MITIE
+* OCR implementation
+* control <=> action communication
+* action ML methods - not just SVM
 
-PROJECT TODO:
-* Kernel methods to get more than simply a linear SVM working
-* Read the Brown corpus and use that for training data
-* Pass the word data in a meaningful (context-based) way to the SVM
-* Once the NeuralNetworks project gets going for real, explore using
-    LSTM or RNN models instead of an SVM for context understanding
+Given the complexity and computational intensity of the project, I've decided
+to split the project into two parts, control and action, corresponding to a 
+GPU-equipped computer and an integrated circuit board like an Arduino or 
+Raspberry Pi with limited computing power.
 
-This code was written in C so as to be light on the processor - the idea
-being that it would be useful on an Arduino or other similar integrated chip processor.
+Because of this restructuring, I'm working mostly (for now) on the parts of the
+project that will be done on the control side, once this is done I will be able 
+to keep working on the other part.
 
-It makes use of Python integration for Slack utilities and plotting SVM
-results, since it's still untested I'm not sure if those will cause a significant
-slowdown on a small chip.  My hope is that it won't simply because we
-are using a small subset of Python.
+Since the Brown corpus is so unwieldy, I'm going to use [MITIE](https://github.com/mit-nlp/MITIE)
+for the NLP component and extracting the word vector embeddings.
 
+I've decided to use [dlib](http://dlib.net/ml.html) for the computer-side machine learning
+components, so that's character OCR and training the word2vec model.
 
+Once the word2vec model is trained, I'll send the matrix to the integrated chip and 
+then perform the context recognition on the chip directly to avoid potential issues. 
+The OCR will never work really well without a beefier computer, so I'll implement some
+sort of protocol for sending the pictures around.
 
-Dependencies:
+The action code was written in C so as to be light on processing and RAM, while control has no
+such constraints. It makes use of Python so as to use `slacker` and `matplotlib` for my own 
+convenience. To this end, I've included (and will use) my [Py_Cpp project](https://github.com/bzcheeseman/Py_Cpp)
+which will be used for my own convenience wherever possible.
+
+## Dependencies:
 ```
 Python - matplotlib
 Python - slacker
+Slack Bot token(!!!)
 Doxygen - To rebuild documentation
 Electron - To view documentation
-Slack Bot token(!!!)
+dlib (with or without CUDNN - the GPU will speed things up)
+MITIE
 ```
 
 [slacker](https://github.com/os/slacker) has been quite useful - give them a look!
@@ -48,6 +57,15 @@ code for any reason (it works well in many languages, C and C++ happen to be two
 a super cool tool that I've begun to use to view my handy dandy Doxygen
 documentation without having to put the pages up and host them somehow.  Definitely not an expert
 but it's fun to play with.
+
+[dlib](http://dlib.net/ml.html) is a fairly general purpose library with a fantastic support
+for machine learning APIs in C and/or C++. It makes building and training deep neural networks
+easy and fast.
+
+[MITIE](https://github.com/mit-nlp/MITIE) is a library built on dlib that allows for fast 
+feature extraction.
+
+## Build/Run
 
 To build and run the test program:
 ```
@@ -73,9 +91,10 @@ electron .
 which will show the documentation in its own little chromium window
 provided you have [electron](https://github.com/electron/electron/blob/master/docs/tutorial/quick-start.md) installed.
 
-now using dlib and the Chars74K and mnist datasets for image recognition
-and the brown corpus for nlp
+## Data
 
-chars74k - http://www.ee.surrey.ac.uk/CVSSP/demos/chars74k/
-
-brown corpus - http://www.sls.hawaii.edu/bley-vroman/brown_nolines.txt
+For training the various machine learning models, I use the following datasets:
+* [Chars74K](http://www.ee.surrey.ac.uk/CVSSP/demos/chars74k/) for OCR
+* [mnist](http://yann.lecun.com/exdb/mnist/) also for OCR
+* [Brown Corpus](http://www.sls.hawaii.edu/bley-vroman/brown_nolines.txt) for 
+context recognition and NLP - there may be a better solution for this one

@@ -21,54 +21,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "include/train.hpp"
-#include <chrono>
+#include "include/resnet.hpp"
 
 int main(int argc, char *argv[]){
 
-  word2vec net;
-//  std::cout << net << std::endl;
+  resnet net ("../../logging/resnet_logs");
 
-  std::vector<matrix<unsigned int>> one_hot;
-  std::vector<unsigned long> labels;
-
-  corpus_t corpus;
-
-  try{
-    std::cout << "Trying to pull from existing data" << std::endl;
-    deserialize("../../data/brown_processed/corpus.txt") >> corpus;
-    deserialize("../../data/brown_processed/training_one_hot.txt") >> one_hot;
-    deserialize("../../data/brown_processed/training_labels.txt") >> labels;
-  }
-  catch(...){
-    std::cout << "No existing data, loading in new data" << std::endl;
-
-    auto start = std::chrono::steady_clock::now();
-
-    corpus = load_corpus("../../data/testing_data.txt", 1);
-
-    auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start);
-    std::cout << "Loading took: " << duration.count() << " sec" << std::endl;
-
-    serialize("../../data/brown_processed/corpus.txt") << corpus;
-
-    process_corpus(corpus, one_hot, labels);
-
-    corpus.clear();
-
-    serialize("../../data/brown_processed/training_one_hot.txt") << one_hot;
-    serialize("../../data/brown_processed/training_labels.txt") << labels;
-  }
-
-  std::cout << corpus.size() << std::endl;
-
-  try {
-    matrix<float> weights = train_word2vec(net, one_hot, labels); //this is not working - the loss isn't updating right
-    std::cout << weights << std::endl;
-  }
-  catch (std::exception &e){
-    std::cout << e.what() << std::endl;
-  }
+  net.train(dataset::FONT);
 
   return 0;
 }
