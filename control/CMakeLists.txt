@@ -16,19 +16,20 @@ find_package(PythonLibs 2.7 REQUIRED)
 
 if (BREWED)
     set(PYTHON_LIBRARY "/usr/local/Frameworks/Python.framework/Versions/Current/lib/libpython2.7.dylib")
+    set(PYTHON_INCLUDE_DIR "/usr/local/Frameworks/Python.framework/Headers")
 endif ()
 
 include_directories(${PYTHON_INCLUDE_DIR})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Ofast")
 
 set(SOURCE_FILES_control
         include/py_module.hpp
         include/communicate.hpp
-        include/resnet.hpp
+        include/ocrnet.hpp
         include/dataset.hpp
         src/communicate.cpp
-        src/resnet.cpp
+        src/ocrnet.cpp
         src/dataset.cpp
         main.cpp)
 

@@ -32,6 +32,7 @@
 #include <dlib/array2d.h>
 #include <dlib/threads.h>
 #include <dlib/misc_api.h>
+#include <dlib/gui_widgets.h>
 
 //STL dependencies
 #include <string>
@@ -47,8 +48,6 @@ class dataset {
   size_t samples_per_label;
   size_t test_samples_per_label;
 
-  const int image_dim = 20;
-
   struct hnd_t {
     std::string folder = "/Hnd/Img";
     std::string img_prefix_under10 = "-00";
@@ -63,6 +62,11 @@ class dataset {
     std::string ID = "fnt";
   } Fnt ;
 
+  struct mnist_t {
+    std::string folder = "/mnist_train";
+    std::string ID = "mnist";
+  } Mnist ;
+
   const std::string folder;
 
   std::vector<matrix<unsigned char>> training_images;
@@ -76,8 +80,9 @@ private:
   void load();
 
 public:
+  static const int image_dim = 2<<4; //The size of the mnist images is 20
 
-  enum data_folder_t {HAND, FONT};
+  enum data_folder_t {HAND, FONT, MNIST};
 
   dataset(std::string folder, data_folder_t which); //need to add in something in case the files are already there
   ~dataset();

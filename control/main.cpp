@@ -21,13 +21,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "include/resnet.hpp"
+#include "include/ocrnet.hpp"
 
 int main(int argc, char *argv[]){
 
-  resnet net ("../../logging/resnet_logs");
+  try {
 
-  net.train(dataset::FONT);
+//    ocrnet net_hnd ("../../logging/resnet_logs");
+//    ocrnet net_fnt ("../../logging/resnet_logs");
+    ocrnet net_mnist("../../logging/resnet_logs");
+
+//    net_hnd.train(dataset::HAND, true);
+//    net_fnt.train(dataset::FONT);
+    net_mnist.train(dataset::MNIST);
+
+  }
+  catch (std::exception &e){
+    std::cout << e.what() << std::endl;
+  }
 
   return 0;
 }

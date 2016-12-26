@@ -32,14 +32,18 @@ dataset::dataset(std::string folder, data_folder_t which)
   switch (which) {
     case HAND :
       ID = Hnd.ID;
-      samples_per_label = 40;
-      test_samples_per_label = 15;
+      samples_per_label = 45;
+      test_samples_per_label = 10;
       break;
     case FONT :
       ID = Fnt.ID;
       samples_per_label = 60;
       test_samples_per_label = 15;
       break;
+    case MNIST :
+      ID = Mnist.ID;
+      load_mnist_dataset(folder + Mnist.folder, this->training_images, this->training_labels, this->testing_images, this->testing_labels);
+      return;
   }
 
   try {
@@ -66,6 +70,9 @@ dataset::~dataset() {
       break;
     case FONT :
       ID = Fnt.ID;
+      break;
+    case MNIST :
+      ID = Mnist.ID;
       break;
   }
 
@@ -102,7 +109,10 @@ void dataset::load(){
         prefix_under10 = Fnt.img_prefix_under10;
         prefix_under100 = Fnt.img_prefix_under100;
         break;
+      case MNIST : return;
     }
+
+    dlib::interpolate_quadratic interpolant;
 
     for (int i = 1; i < num_classes+1; i++) {
       std::string sample_no;
@@ -114,7 +124,7 @@ void dataset::load(){
       }
 
       array2d<unsigned char> img;
-      array2d<unsigned char> scaled_img(image_dim, image_dim);
+      array2d<unsigned char> scaled_img (2*image_dim, 2*image_dim);
 
       for (int j = 1; j <= samples_per_label; j++) {
 
@@ -124,7 +134,7 @@ void dataset::load(){
           load_image(img, sample_no + prefix_under100 + std::to_string(j) + ".png");
         }
 
-        resize_image(img, scaled_img);
+        resize_image(img, scaled_img, interpolant);
 
         training_images.push_back((matrix<unsigned char>)mat(scaled_img));
         training_labels.push_back((unsigned long) i - 1);
@@ -134,7 +144,7 @@ void dataset::load(){
 
         load_image(img, sample_no + prefix_under100 + std::to_string(l) + ".png");
 
-        resize_image(img, scaled_img);
+        resize_image(img, scaled_img, interpolant);
 
         testing_images.push_back((matrix<unsigned char>)mat(scaled_img));
         testing_labels.push_back((unsigned long) i - 1);
@@ -181,12 +191,13 @@ void dataset::operator()(size_t index1, size_t index2,
 
   try {
 
-    matrix<unsigned char> temp_img;
+    matrix<unsigned char> temp_img, scaled_img (image_dim, image_dim);
     unsigned long temp_label;
 
     for (size_t i = index1; i < index2; i++) {
       this->operator()(i, temp_img, temp_label, test);
-      images.push_back(temp_img);
+      resize_image(temp_img, scaled_img); //make sure the images are the right size
+      images.push_back(scaled_img);
       labels.push_back(temp_label);
     }
 
