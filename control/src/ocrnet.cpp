@@ -93,13 +93,7 @@ void ocrnet::train(dataset::data_folder_t which, bool force_retrain) {
       unsigned long temp_label;
 
       dlib::rand rnd(time(0));
-      dlib::rand rnd2(time(0));
       dlib::interpolate_quadratic interpolant;
-
-//      point p1 (6,58), p2 (58,6); //fnt or hnd images
-//      point p1 (2,18), p2 (18,2); //mnist images
-//      rectangle rect (p1, p2);
-//      chip_details chip (rect);
 
       while (trainer.get_learning_rate() >= 1e-6) {
         mini_batch_samples.clear();
@@ -111,9 +105,13 @@ void ocrnet::train(dataset::data_folder_t which, bool force_retrain) {
 
           (*this_run)(idx, temp_img, temp_label, false); //get the image
 
-//          chip.angle = rnd.get_random_gaussian() * 0.0;
-//          extract_image_chip(scaled_img, chip, rot_img);
-          resize_image(temp_img, scaled_img, interpolant);
+          //rotate by 0.03 rad works, 98.67% accuracy on mnist (down from 99.1% if we comment out the rotate entirely)
+          auto angle = rnd.get_random_gaussian() * 0.03;
+          rotate_image(temp_img, rot_img, angle, interpolant);
+
+          //invert and then invert back works - change rot_img -> temp_img and comment the rotate lines
+          invert_image(rot_img); //invert again before resizing (make sure to change the resize to rot_img)
+          resize_image(rot_img, scaled_img, interpolant); //make sure it's the right size before we add to the batch
 
           mini_batch_samples.push_back(scaled_img);
           mini_batch_labels.push_back(temp_label);

@@ -41,6 +41,15 @@
 
 using namespace dlib;
 
+inline void invert_image(matrix<unsigned char> &img){
+  for (int i = 0; i < img.nr(); i++){
+    for (int j = 0; j < img.nc(); j++){
+      img(i,j) = (unsigned char)abs(img(i,j) - 255);
+
+    }
+  }
+}
+
 class dataset {
 
   const size_t num_classes = 62;

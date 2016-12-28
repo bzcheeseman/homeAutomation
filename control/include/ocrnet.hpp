@@ -48,7 +48,9 @@ inline std::ostream &operator<<(std::ostream &out, std::vector<Num> vec){
 
 class ocrnet{
 
+  //will probably need to change the last fc layer before the final layer to get this working...
 //  static const unsigned long number_of_classes = 62; //0-9 numbers, capital A-Z and lowercase a-z.
+
   static const unsigned long number_of_classes = 10; //mnist 0-9 numbers
 
   //use different nets for letters vs numbers

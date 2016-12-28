@@ -178,7 +178,7 @@ void dataset::operator()(const size_t index, matrix<unsigned char> &image, unsig
 
   tp.add_task(*this, &dataset::_get_sample, idx, img, lab, tst);
 
-  image = img.get();
+  image = img.get(); //we want this image to be inverted from the normal so that we can rotate or whatever
   label = lab.get();
 }
 
@@ -196,6 +196,11 @@ void dataset::operator()(size_t index1, size_t index2,
 
     for (size_t i = index1; i < index2; i++) {
       this->operator()(i, temp_img, temp_label, test);
+
+      if (!test){ //invert back for test of training accuracy
+        invert_image(temp_img);
+      }
+
       resize_image(temp_img, scaled_img); //make sure the images are the right size
       images.push_back(scaled_img);
       labels.push_back(temp_label);
@@ -219,6 +224,7 @@ void dataset::_get_sample(size_t index, matrix<unsigned char> &image, unsigned l
     } else {
 
       image = training_images[index];
+      invert_image(image); //Make sure to uncomment the other invert in the train function.
       label = training_labels[index];
 
     }
