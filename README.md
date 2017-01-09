@@ -4,6 +4,7 @@ The point of this project is to automate the home as much as possible with
 some amount of NLP - purely context-based recognition.
 
 **PROJECT TODO:**
+* Refactor the rest of control to clean up style, make everything nicer now that I have something working
 * word2vec implementation - MITIE
 * OCR implementation
 * control <=> action communication

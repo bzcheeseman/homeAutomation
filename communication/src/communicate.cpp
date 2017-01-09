@@ -1,8 +1,8 @@
 //
-// Created by Aman LaChapelle on 12/18/16.
+// Created by Aman LaChapelle on 1/8/17.
 //
 // homeAutomation
-// Copyright (c) 2016 Aman LaChapelle
+// Copyright (c) 2017 Aman LaChapelle
 // Full license at homeAutomation/LICENSE.txt
 //
 
@@ -22,10 +22,26 @@
  */
 
 
-#ifndef HOMEAUTOMATION_HA_PYTHON_H
-#define HOMEAUTOMATION_HA_PYTHON_H
+#include "../include/communicate.hpp"
 
-#include "include/plotting.h"
-#include "include/slackInterface.h"
+device::device(const std::string &name, const std::string &unique_id, const bool gpu_enabled) :
+        name(name), unique_id(unique_id), gpu_enabled(gpu_enabled) {}
 
-#endif //HOMEAUTOMATION_HA_PYTHON_H
+device::~device() {
+  ;
+}
+
+
+size_t device::getDisk_available() const {
+  return disk_available;
+}
+
+size_t device::getRam_available() const {
+  return ram_available;
+}
+
+bool device::isGpu_enabled() const {
+  return gpu_enabled;
+}
+
+

@@ -1,8 +1,8 @@
 //
-// Created by Aman LaChapelle on 12/20/16.
+// Created by Aman LaChapelle on 1/8/17.
 //
 // homeAutomation
-// Copyright (c) 2016 Aman LaChapelle
+// Copyright (c) 2017 Aman LaChapelle
 // Full license at homeAutomation/LICENSE.txt
 //
 
@@ -21,13 +21,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#ifndef HOMEAUTOMATION_COMMUNICATE_HPP
-#define HOMEAUTOMATION_COMMUNICATE_HPP
-
-#include "py_module.hpp"
-
-//the computer will be able to tell the arduino "hey I'm sending you an update now!"
-//python slack client here we come
-
-#endif //HOMEAUTOMATION_COMMUNICATE_HPP
+int main(int argc, char *argv[]){
+  return 0;
+}
