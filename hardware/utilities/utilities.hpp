@@ -1,8 +1,8 @@
 //
-// Created by Aman LaChapelle on 12/18/16.
+// Created by Aman LaChapelle on 1/9/17.
 //
 // homeAutomation
-// Copyright (c) 2016 Aman LaChapelle
+// Copyright (c) 2017 Aman LaChapelle
 // Full license at homeAutomation/LICENSE.txt
 //
 
@@ -22,12 +22,9 @@
  */
 
 
-#ifndef HOMEAUTOMATION_HA_PYTHON_H
-#define HOMEAUTOMATION_HA_PYTHON_H
+#ifndef HOMEAUTOMATION_UTILITIES_HPP
+#define HOMEAUTOMATION_UTILITIES_HPP
 
-#include "include/plotting.h"
-#include "include/slackInterface.h"
+#include "include/data_log.hpp"
 
-//TODO: Refactor to use the Py_Cpp code!
-
-#endif //HOMEAUTOMATION_HA_PYTHON_H
+#endif //HOMEAUTOMATION_UTILITIES_HPP

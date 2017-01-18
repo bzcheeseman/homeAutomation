@@ -25,52 +25,38 @@
 #ifndef HOMEAUTOMATION_LOG_HPP
 #define HOMEAUTOMATION_LOG_HPP
 
+/*
+ * TODO: Modify this to work with the device code that I end up using...
+ * TODO: Use ZMQ to communicate between devices!
+ */
+
+//dlib dependencies
+#include <dlib/serialize.h>
+#include <dlib/dnn.h>
+
 //STL dependencies
 #include <mutex>
 #include <map>
 #include <vector>
 #include <cassert>
 
-/*!
- * @struct logEntry_t
- *
- * Holds data to be entered into a log
- */
-struct logEntry_t {
-  //!Term in which entry was created
-  size_t term;
+//0MQ dependencies
+#include <zmq.h>
 
-  //!Entry unique id
-  int id;
+struct log_entry {
+  std::string str_data;
+  dlib::matrix<dlib::rgb_pixel> img_data;
+  dlib::matrix<unsigned char> grey_img_data;
 
-  //!Actual data in entry
-  union{
-    double d_data;
-    float f_data;
-    long l_data;
-    int i_data;
-    char* c_str_data;
-  };
+  enum {STR, IMG, G_IMG} data_type ;
 
-  enum {DOUBLE, FLOAT, LONG, INT, C_STR} data_type;
-
+  log_entry(){};
+  log_entry(std::string data) : str_data(data), data_type(STR) {}
+  log_entry(dlib::matrix<dlib::rgb_pixel> data) : img_data(data), data_type(IMG) {}
+  log_entry(dlib::matrix<unsigned char> data) : grey_img_data(data), data_type(G_IMG) {}
 };
 
-/*!
- * @struct entryResponse_t
- *
- * Holds the response from a long entry - the idx, id and term in which the entry was committed.
- */
-struct entryResponse_t {
-  //!Entry's unique ID
-  int id;
 
-  //!Term in which the entry was commited
-  size_t term;
-
-  //!Entry's index
-  int idx;
-};
 
 /*!
  * @file log.hpp
@@ -90,42 +76,26 @@ struct entryResponse_t {
  *
  * This class is hopefully thread-safe.  It's supposed to be.
  */
-class log {
+class data_log {
 
 private:
-  /*!
-   * Number of entries in the log
-   * Must be equal to _log.size()
-   */
   size_t log_count;
 
-  /*!
-   * The current term - this number controls a lot and will be incremented externally.
-   *
-   * add a mutex to this?
-   */
   size_t current_term;
 
-  /*!
-   * Holds the entries in a map - allows us to change the keys without changing the order if required.
-   *
-   */
-  std::map<size_t, logEntry_t> _log;
+  std::map< unsigned long, std::string> _str_log; //change these to have keys that are their labels? That way I can train on this stuff
 
-  /*!
-   * Mutex to lock the log map
-   *
-   */
+  std::map< unsigned long, dlib::matrix<dlib::rgb_pixel> > _img_log;
+
+  std::map< unsigned long, dlib::matrix<unsigned char> > _grey_img_log;
+
   std::mutex _log_mutex;
 
-  /*!
-   * Current (latest) entry idx
-   */
-  int current_idx;
+  unsigned long current_label;
 
 public:
   //!Default constructor
-  log();
+  data_log();
 
   /*!
    * Copy assignment
@@ -136,7 +106,7 @@ public:
    * @param other The log object to be copied
    * @returns log& Returns this object
    */
-  log& operator=(log &other);
+  data_log &operator=(data_log &other);
 
   /*!
    * Move assignment
@@ -147,21 +117,21 @@ public:
    * @param other The log object to be moved
    * @returns log& Returns this object
    */
-  log& operator=(log &&other);
+  data_log &operator=(data_log &&other);
 
   //!Copy constructor
   //!@see operator=(const log&)
-  log(log &other);
+  data_log(data_log &other);
 
   //!Move constructor
   //!@see operator=(log&&)
-  log(log &&other);
+  data_log(data_log &&other);
 
   /*!
    * Default destructor
    * Locks _log_mutex, need to be sure to unlock this mutex before calling dtor!
    */
-  virtual ~log();
+  virtual ~data_log();
 
   /*!
    * To clear the log without destroying the object.
@@ -187,7 +157,7 @@ public:
    *
    * @returns current_idx
    */
-  inline int getCurrent_idx() const { return current_idx; }
+  inline size_t getCurrent_idx() const { return current_idx; }
 
   /*!
    * Getter for log_count
@@ -207,16 +177,18 @@ public:
    *
    * @returns The proper response, containing the entry's ID and idx, and term in which it was committed
    */
-  entryResponse_t appendEntry(const logEntry_t &data);
+  entryResponse_t appendEntry(const log_entry &data);
 
   /*!
    * @copydoc appendEntry(const logEntry_t&)
    *
    * Allows us to take advantage of the return from a function call directly.
    */
-  entryResponse_t appendEntry(logEntry_t &&data);
+  entryResponse_t appendEntry(log_entry &&data);
 
   ///////
+
+  enum data_type {STR, IMG, G_IMG};
 
   /*!
    * Gets the log entry at a certain idx safely.  Mostly identical to the map accessor
@@ -227,7 +199,7 @@ public:
    * @returns logEntry_t containing the data we wanted.
    *
    */
-  logEntry_t & operator[](const int &idx);
+  log_entry &operator()(const size_t &idx, data_type which);
 
   /*!
    * @copydoc operator[](const int&)
@@ -235,7 +207,7 @@ public:
    * Allows us to take advantage of the return value of a function.
    *
    */
-  logEntry_t & operator[](int &&idx);
+  log_entry &operator()(size_t &&idx, data_type which);
 
   ///////
 
@@ -252,7 +224,19 @@ public:
    * @returns Array of log entries
    *
    */
-  std::vector<logEntry_t> getRange(const int start_idx, const int end_idx = -1);
+  std::vector<log_entry> getRange(data_type which, const size_t start_idx, const size_t end_idx = 0);
+
+  std::vector<log_entry> allofType(data_type which); //change this to allString, allImg, allGImg and just return a vector of the type.
+
+  void dumpLogs(std::string filename = "../../logging/logs_");
+
+  inline size_t operator>(const data_log &other){
+    return (this->current_term > other.current_term) ? this->current_term : other.current_term;
+  }
+
+  inline size_t operator<(const data_log &other){
+    return (this->current_term < other.current_term) ? this->current_term : other.current_term;
+  }
 
 };
 

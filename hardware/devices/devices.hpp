@@ -1,5 +1,5 @@
 //
-// Created by Aman LaChapelle on 1/8/17.
+// Created by Aman LaChapelle on 1/9/17.
 //
 // homeAutomation
 // Copyright (c) 2017 Aman LaChapelle
@@ -21,6 +21,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-int main(int argc, char *argv[]){
-  return 0;
-}
+
+#ifndef HOMEAUTOMATION_DEVICES_HPP
+#define HOMEAUTOMATION_DEVICES_HPP
+
+#include "include/device.hpp"
+#include "include/compute_device.hpp"
+#include "include/raspi.hpp"
+
+#endif //HOMEAUTOMATION_DEVICES_HPP

@@ -7,7 +7,7 @@
 command_t *getTermCommands(char *filename, int current_term){
 
   if (filename == NULL){
-    filename = "/Users/Aman/code/homeAutomation/logging/commands.log";
+    filename = "/Users/Aman/code/homeAutomation/logging/commands.data_log";
   }
 
   command_t *cmds = malloc(sizeof(command_t));
@@ -28,11 +28,11 @@ command_t *getTermCommands(char *filename, int current_term){
   //Record the number of lines in this struct
   cmds->entries = numLines;
 
-  //Set up the log entries
+  //Set up the data_log entries
   cmds->log_entries = malloc(sizeof(char*) * numLines);
   char recv[64] = "Received: ";
 
-  //Build the log entries
+  //Build the data_log entries
   for (int i = 0; i < numLines; i++){
     strncat(recv, cmds->actions[i], strlen(cmds->actions[i]));
     cmds->log_entries[i] = calloc(sizeof(char), (strlen(recv) + 1));
@@ -59,7 +59,7 @@ void discardCommands(command_t *commands){
 void commitToLog(command_t *commands, char *filename){
 
   if (filename == NULL){
-    filename = "/Users/Aman/code/homeAutomation/logging/commandsParsing.log";
+    filename = "/Users/Aman/code/homeAutomation/logging/commandsParsing.data_log";
   }
   FILE *log = fopen(filename, "w+");
 

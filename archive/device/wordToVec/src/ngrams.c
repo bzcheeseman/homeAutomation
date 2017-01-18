@@ -120,7 +120,7 @@ void addPhrase(char *phrase, size_t window, map_t *bag) {
 
 void logtoFile(map_t *bag, char *filename) {
   if (filename == NULL){
-    filename = "/Users/Aman/code/homeAutomation/logging/wordbag.log";
+    filename = "/Users/Aman/code/homeAutomation/logging/wordbag.data_log";
   }
   FILE *log = fopen(filename, "w+");
   int end = bag->size;
@@ -142,14 +142,14 @@ void logtoFile(map_t *bag, char *filename) {
 
 //map_t *importfromFile(char *filename) {
 //  if (filename == NULL){
-//    filename = "/Users/Aman/code/homeAutomation/logging/wordbag.log";
+//    filename = "/Users/Aman/code/homeAutomation/logging/wordbag.data_log";
 //  }
 //
-//  FILE *log = fopen(filename, "r+");
+//  FILE *data_log = fopen(filename, "r+");
 //
 //  char *num_lines = NULL;
 //  size_t len = 0;
-//  getline(&num_lines, &len, log);
+//  getline(&num_lines, &len, data_log);
 //
 //  int length = atoi(num_lines);
 //  map_t *bag = newMap(length, 2);
@@ -159,7 +159,7 @@ void logtoFile(map_t *bag, char *filename) {
 //  size_t l = 0;
 //  size_t read = 0;
 //
-//  while ((read = getline(&buf, &l, log)) != -1){
+//  while ((read = getline(&buf, &l, data_log)) != -1){
 //    char *buf2;
 //    if (read <= 2 || buf[0] == '#'){
 //      ;

@@ -1,8 +1,8 @@
 //
-// Created by Aman LaChapelle on 12/20/16.
+// Created by Aman LaChapelle on 1/9/17.
 //
 // homeAutomation
-// Copyright (c) 2016 Aman LaChapelle
+// Copyright (c) 2017 Aman LaChapelle
 // Full license at homeAutomation/LICENSE.txt
 //
 
@@ -21,29 +21,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "include/ocrnet.hpp"
 
-int main(int argc, char *argv[]){
+#include "../include/compute_device.hpp"
 
-  try {
-
-    ocrnet net_hnd ("../../logging/resnet_logs");
-//    ocrnet net_fnt ("../../logging/resnet_logs");
-//    ocrnet net_mnist("../../logging/resnet_logs");
-
-    std::cout << net_hnd.get_size() << std::endl;
-
-    net_hnd.train(dataset::HAND, true);
-//    net_fnt.train(dataset::FONT);
-//    net_mnist.train(dataset::MNIST);
-
-    std::cout << net_hnd.get_size() << std::endl;
-
-  }
-  catch (std::exception &e){
-    std::cout << e.what() << std::endl;
-  }
-
-  return 0;
+compute_device::compute_device(const std::string &name,
+                               const std::string &unique_id, 
+                               const size_t num_threads) :
+        device(name, unique_id, true, num_threads) {
+  ;
 }
-

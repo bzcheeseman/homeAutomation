@@ -34,7 +34,7 @@
 #include <numeric>
 
 #include "dataset.hpp"
-#include "../../utilities/py_module.hpp"
+#include "../../python/py_module.hpp"
 
 #define PI 3.14159265358979323846264338327950288419716939937510
 
@@ -47,9 +47,9 @@ inline std::ostream &operator<<(std::ostream &out, std::vector<Num> vec){
 }
 
 //will probably need to change the last fc layer before the final layer to get this working...
-//  static const unsigned long number_of_classes = 62; //0-9 numbers, capital A-Z and lowercase a-z.
+static const unsigned long number_of_classes = 62; //0-9 numbers, capital A-Z and lowercase a-z.
 
-static const unsigned long number_of_classes = 10; //mnist 0-9 numbers
+//static const unsigned long number_of_classes = 10; //mnist 0-9 numbers
 
 //use different nets for letters vs numbers
 //work on dlib rnn
@@ -98,17 +98,15 @@ template <typename SUBNET> using ocrnetB_t = inception3<sub_block1_t,sub_block5,
 
 using ocrnet_train = loss_multiclass_log<
         fc<number_of_classes,
-           relu<fc<32, //had a max_pool layer right here, wondering if that helped or not...
-                   ocrnetB_t<
-                           max_pool<2,2,1,1,ocrnetA_t<
+           relu<fc<128, //had a max_pool layer right here, wondering if that helped or not...
+                   ocrnetB_t<max_pool<2,2,1,1,ocrnetA_t<
                                    stem<input<matrix<unsigned char>>>>>>>>>>;
 
 using ocrnet_predict = loss_multiclass_log<
         fc<number_of_classes,
-           relu<fc<32,
-                   ocrnetB<
-                           max_pool<2,2,1,1,ocrnetA<
-                                   stem<input<matrix<unsigned char>>>>>>>>>>;
+           relu<fc<128,
+                   ocrnetB<max_pool<2,2,1,1,ocrnetA<
+                           stem<input<matrix<unsigned char>>>>>>>>>>;
 
 class ocrnet{
 
@@ -127,6 +125,8 @@ public:
   virtual ~ocrnet();
 
   void train(dataset::data_folder_t which, bool force_retrain = false);
+
+  size_t get_size(){return sizeof(predicting);}
 
 };
 

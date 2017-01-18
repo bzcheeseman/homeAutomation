@@ -8,7 +8,7 @@
 
 void importInterface(interface_t *interface){
 
-  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation", 1); //fix this too
+  setenv("PYTHONPATH", "/Users/Aman/code/homeAutomation/archive/device/python", 1); //fix this too
   char *token = getenv("SLACK_KEY");
 
   //Initialize the Interpreter

@@ -1,8 +1,8 @@
 //
-// Created by Aman LaChapelle on 12/20/16.
+// Created by Aman LaChapelle on 1/8/17.
 //
 // homeAutomation
-// Copyright (c) 2016 Aman LaChapelle
+// Copyright (c) 2017 Aman LaChapelle
 // Full license at homeAutomation/LICENSE.txt
 //
 
@@ -21,29 +21,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "include/ocrnet.hpp"
+#include "devices/devices.hpp"
 
 int main(int argc, char *argv[]){
 
-  try {
-
-    ocrnet net_hnd ("../../logging/resnet_logs");
-//    ocrnet net_fnt ("../../logging/resnet_logs");
-//    ocrnet net_mnist("../../logging/resnet_logs");
-
-    std::cout << net_hnd.get_size() << std::endl;
-
-    net_hnd.train(dataset::HAND, true);
-//    net_fnt.train(dataset::FONT);
-//    net_mnist.train(dataset::MNIST);
-
-    std::cout << net_hnd.get_size() << std::endl;
-
-  }
-  catch (std::exception &e){
-    std::cout << e.what() << std::endl;
-  }
+//  raspi test ("test", "192.164.1.100");
+//  raspi test2 ("test2", "dflj");
+//
+//  test.run_slack_server();
+//
+//  test.share_logs(test2);
 
   return 0;
 }
-

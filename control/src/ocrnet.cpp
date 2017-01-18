@@ -75,14 +75,13 @@ void ocrnet::train(dataset::data_folder_t which, bool force_retrain) {
   }
   catch(...){ //no serialized network
     try {
-      dnn_trainer<ocrnet_train, adam> trainer(training, adam()); //try this once the solver finishes
+      dnn_trainer<ocrnet_train> trainer(training, sgd(0.0002, 0.9)); //try this once the solver finishes
 
       trainer.be_verbose();
 
       trainer.set_synchronization_file(sync_folder + "/"+ID+"_train_sync.dat", std::chrono::seconds(100));
 
-      trainer.set_iterations_without_progress_threshold(3000); //play with these
-      trainer.set_learning_rate_shrink_factor(0.1);
+      trainer.set_iterations_without_progress_threshold(2500);
       trainer.set_learning_rate(1e-2);
 
       std::vector<matrix<unsigned char>> mini_batch_samples;
@@ -95,18 +94,19 @@ void ocrnet::train(dataset::data_folder_t which, bool force_retrain) {
       dlib::rand rnd(time(0));
       dlib::interpolate_quadratic interpolant;
 
+      double angle;
+
       while (trainer.get_learning_rate() >= 1e-6) {
         mini_batch_samples.clear();
         mini_batch_labels.clear();
 
-        // make a 32 image mini-batch
-        while (mini_batch_samples.size() < 32) {
+        // make a mini-batch
+        while (mini_batch_samples.size() < 64) { //this code works on mnist, I guess I just need more data? Or maybe an RNN will help for letters?
           auto idx = rnd.get_random_32bit_number() % train_size;
 
           (*this_run)(idx, temp_img, temp_label, false); //get the image
 
-          //rotate by 0.03 rad works, 98.67% accuracy on mnist (down from 99.1% if we comment out the rotate entirely)
-          auto angle = rnd.get_random_gaussian() * 0.03;
+          angle = rnd.get_random_gaussian() * 0.1 * PI;
           rotate_image(temp_img, rot_img, angle, interpolant);
 
           //invert and then invert back works - change rot_img -> temp_img and comment the rotate lines

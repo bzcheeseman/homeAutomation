@@ -2,39 +2,36 @@
 // Created by Aman LaChapelle on 8/19/16.
 //
 
-#include "ml/ml.h"
-#include "python/ha_python.h"
-#include "wordToVec/wordToVec.h"
-#include "utilities/utilities.h"
+#include "device/python/ha_python.h"
 
 int main(){
-//  interface_t *in = malloc(sizeof(interface_t));
-//  in->initialized = 0;
-//  in->current_term = 0;
-//  in->interface = NULL;
-//
-//  importInterface(in);
-//  sendMessage(in, "Hi there from C!");
-//  handleRequests(in, 3);
-//
-//
+  interface_t *in = malloc(sizeof(interface_t));
+  in->initialized = 0;
+  in->current_term = 0;
+  in->interface = NULL;
+
+  importInterface(in);
+  sendMessage(in, "Hi there from C!");
+  handleRequests(in, 3);
+
+
 //  command_t *cmd  = getTermCommands(NULL, in->current_term);
 //  commitToLog(cmd, NULL);
 //
 //  shutdownInterface(in);
 //  discardCommands(cmd);
-//
-//  free(in);
-//
-  char phrase[] = "hi there raspi can you help me "; //test phrase
 
-  map_t *bag = mapNgrams(phrase, 1, NULL);
-
+  free(in);
+//
+//  char phrase[] = "hi there raspi can you help me "; //test phrase
+//
+//  map_t *bag = mapNgrams(phrase, 1, NULL);
+//
 //  addPhrase("well hi there", 1, bag); //add a test phrase with a bigram already in the bag
+//
+//  printBag(bag);
 
-  printBag(bag);
-
-//  logtoFile(bag, NULL); //log to file to see what we get
+//  logtoFile(bag, NULL); //data_log to file to see what we get
 
 //  int len = 1000;
 //

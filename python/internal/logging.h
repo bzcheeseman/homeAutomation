@@ -22,8 +22,8 @@
  */
 
 
-#ifndef PROJECT_LOGGING_H
-#define PROJECT_LOGGING_H
+#ifndef PYC_LOGGING_H
+#define PYC_LOGGING_H
 
 #include <stdio.h>
 #include <string.h>
@@ -100,10 +100,4 @@ void close_log(logs_t *logs){
   free(logs);
 }
 
-
-
-
-
-
-
-#endif //PROJECT_LOGGING_H
+#endif //PYC_LOGGING_H

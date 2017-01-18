@@ -102,7 +102,7 @@ Data Fields</h2></td></tr>
 <tr class="memdesc:a322225f4169512e971d109d858cf5995"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current term (as of the end of the actions array)  <a href="#a322225f4169512e971d109d858cf5995">More...</a><br /></td></tr>
 <tr class="separator:a322225f4169512e971d109d858cf5995"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af89d76632305c2b41bb772205f27f455"><td class="memItemLeft" align="right" valign="top">char **&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcommand__t.html#af89d76632305c2b41bb772205f27f455">log_entries</a></td></tr>
-<tr class="memdesc:af89d76632305c2b41bb772205f27f455"><td class="mdescLeft">&#160;</td><td class="mdescRight">The log entries to be committed for this slice of actions.  <a href="#af89d76632305c2b41bb772205f27f455">More...</a><br /></td></tr>
+<tr class="memdesc:af89d76632305c2b41bb772205f27f455"><td class="mdescLeft">&#160;</td><td class="mdescRight">The data_log entries to be committed for this slice of actions.  <a href="#af89d76632305c2b41bb772205f27f455">More...</a><br /></td></tr>
 <tr class="separator:af89d76632305c2b41bb772205f27f455"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae288a6e758b89be6063c347381106a72"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structcommand__t.html#ae288a6e758b89be6063c347381106a72">entries</a></td></tr>
 <tr class="memdesc:ae288a6e758b89be6063c347381106a72"><td class="mdescLeft">&#160;</td><td class="mdescRight">The number of entries in this struct (length of char **actions and char **log_entries)  <a href="#ae288a6e758b89be6063c347381106a72">More...</a><br /></td></tr>
@@ -112,7 +112,7 @@ Data Fields</h2></td></tr>
 <div class="textblock"><p>Holds:</p><ul>
 <li>An array of actions to be completed</li>
 <li>The current term (the term of the last command in the actions array)</li>
-<li>The log entries for all of those actions</li>
+<li>The data_log entries for all of those actions</li>
 <li>The number of entries - could back out the start term from this number if needed. </li>
 </ul>
 </div><h2 class="groupheader">Field Documentation</h2>
@@ -168,7 +168,7 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>The log entries to be committed for this slice of actions. </p>
+<p>The data_log entries to be committed for this slice of actions. </p>
 
 </div>
 </div>
