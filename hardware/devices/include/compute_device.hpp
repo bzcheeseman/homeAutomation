@@ -30,9 +30,9 @@
 using namespace dlib;
 
 //will probably need to change the last fc layer before the final layer to get this working...
-//  static const unsigned long number_of_classes = 62; //0-9 numbers, capital A-Z and lowercase a-z.
+static const unsigned long number_of_classes = 62; //0-9 numbers, capital A-Z and lowercase a-z.
 
-static const unsigned long number_of_classes = 10; //mnist 0-9 numbers
+//static const unsigned long number_of_classes = 10; //mnist 0-9 numbers
 
 //use different nets for letters vs numbers
 //work on dlib rnn

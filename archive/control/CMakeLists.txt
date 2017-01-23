@@ -1,7 +1,7 @@
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y -Ofast")
 
 set(SOURCE_FILES_control
-        ../python/py_module.hpp
+        ../../python/py_module.hpp
         include/ocrnet.hpp
         include/dataset.hpp
         src/ocrnet.cpp

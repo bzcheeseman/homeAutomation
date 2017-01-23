@@ -1,8 +1,8 @@
 //
-// Created by Aman LaChapelle on 12/20/16.
+// Created by Aman LaChapelle on 1/21/17.
 //
 // homeAutomation
-// Copyright (c) 2016 Aman LaChapelle
+// Copyright (c) 2017 Aman LaChapelle
 // Full license at homeAutomation/LICENSE.txt
 //
 
@@ -21,29 +21,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "include/ocrnet.hpp"
 
-int main(int argc, char *argv[]){
+#ifndef HOMEAUTOMATION_DLIB_TO_ZMQ_HPP
+#define HOMEAUTOMATION_DLIB_TO_ZMQ_HPP
 
-  try {
+#include <dlib/serialize.h>
+#include <zmqpp/zmqpp.hpp>
 
-    ocrnet net_hnd ("../../logging/resnet_logs");
-//    ocrnet net_fnt ("../../logging/resnet_logs");
-//    ocrnet net_mnist("../../logging/resnet_logs");
+namespace dlib_zmq{
 
-    std::cout << net_hnd.get_size() << std::endl;
-
-    net_hnd.train(dataset::HAND, true);
-//    net_fnt.train(dataset::FONT);
-//    net_mnist.train(dataset::MNIST);
-
-    std::cout << net_hnd.get_size() << std::endl;
-
-  }
-  catch (std::exception &e){
-    std::cout << e.what() << std::endl;
+  template<typename serializable_type>
+  void to_zmq(serializable_type &item, zmqpp::message &message){
+    std::stringstream stream;
+    dlib::serialize(item, stream);
+    message << stream.str();
   }
 
-  return 0;
-}
+  template<typename serializable_type>
+  void from_zmq(serializable_type &item, zmqpp::message &message){
+    std::string msg;
+    message >> msg;
+    std::stringstream stream(msg);
+    dlib::deserialize(item, stream);
+  }
 
+} //dlib_zmq
+
+
+#endif //HOMEAUTOMATION_DLIB_TO_ZMQ_HPP

@@ -5,6 +5,8 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
 set(CMAKE_C_COMPILER /usr/local/bin/gcc-6)
 
+include("cmake")
+
 find_package(Doxygen)
 
 if(DOXYGEN_FOUND)
@@ -37,8 +39,9 @@ endif ()
 
 include_directories(${PYTHON_INCLUDE_DIR})
 
-add_subdirectory(control)
+add_subdirectory(archive/control)
 add_subdirectory(hardware)
+add_subdirectory(messaging)
 add_subdirectory(archive/device/ml)
 add_subdirectory(archive/device/python)
 add_subdirectory(archive/device/utilities)
