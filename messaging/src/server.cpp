@@ -24,28 +24,10 @@
 
 #include "../include/server.hpp"
 
-worker::worker(zmqpp::context &ctx) : ctx_(ctx), worker_(ctx_, ZMQ_PULL) { }
 
-void worker::work() {
+server::server(std::string keydir) : ctx_() {
+  backend_ = new zmqpp::socket (ctx_, zmqpp::socket_type::router); //1 to N
+  frontend_ = new zmqpp::socket (ctx_, zmqpp::socket_type::dealer); //N to 1
 
-  worker_.connect("inproc://backend");
-
-  try {
-    zmqpp::message identity;
-    zmqpp::message msg;
-    zmqpp::message copied_identity;
-    zmqpp::message reply_msg;
-
-    worker_.receive(identity);
-    worker_.receive(msg);
-
-    //process the message and do stuff. Then reply to the server.
-
-  }
-  catch(std::exception &e){
-    std::cout << e.what() << std::endl;
-  }
-
-
+  //load up keys from file?
 }
-

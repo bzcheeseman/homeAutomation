@@ -36,26 +36,22 @@
 
 #include "dlib_zmq.hpp"
 
-class worker {
-
-  zmqpp::context &ctx_;
-  zmqpp::socket worker_;
-
-public:
-  worker(zmqpp::context &ctx, int sock_type);
-
-  void work();
-
-};
-
 class server {
 
+  //! ZMQ context
   zmqpp::context ctx_;
-  zmqpp::socket frontend_;
-  zmqpp::socket backend_;
+
+  //! ZMQ client facing port - encrypted with CURVE
+  zmqpp::socket *frontend_;
+  zmqpp::curve::keypair server_keypair_;
+  std::vector<std::string> client_pubkeys_;
+
+  //! ZMQ worker facing port
+  zmqpp::socket *backend_;
+
 
 public:
-
+  server(std::string keydir);
 
 
 };

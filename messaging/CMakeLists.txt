@@ -6,6 +6,7 @@ include_directories(${PYTHON_INCLUDE_DIR})
 
 set(messaging_SOURCE_FILES
         include/dlib_zmq.hpp
+        include/message.hpp
         include/server.hpp
         src/server.cpp
         main.cpp)
