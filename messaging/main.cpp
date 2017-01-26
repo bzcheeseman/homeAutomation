@@ -27,39 +27,19 @@
 #include <dlib/serialize.h>
 #include <dlib/iosockstream.h>
 #include <dlib/matrix.h>
-#include "include/dlib_zmq.hpp"
+#include "include/message.hpp"
 
 int main(int argc, char *argv[]){
 
   dlib::matrix<float,2,2> m;
   m = 1.0, 0.0, -1.0, 0.0;
 
-  //this process works! Just need to send it through zmq now :P
-
-  zmqpp::message msg;
-  dlib_zmq::to_zmq(m, msg);
-
-
-//  std::stringstream ss;
-//  std::ostream out(ss.rdbuf());
-//
-//  dlib::serialize(m, out); //serialize object to a stringstream
-//
-//  std::string serialized = ss.str(); //convert to a string
-//  std::cout << serialized << std::endl;
-//
-//  std::cout << serialized.size() << std::endl;
-//  std::cout << (int)serialized[0] << std::endl;
-//  std::cout << (int)serialized[1] << std::endl;
-//
-//  auto inbackupbuf = std::cin.rdbuf(ss.rdbuf()); //redirect to cin now
-//  std::stringstream back_in(serialized); //back to a stringstream
+  _internal::message msg("me", "recip");
+  msg << m;
+  zmqpp::message zmq_msg = msg.to_zmq();
   dlib::matrix<float> m_out;
-  dlib_zmq::from_zmq(m_out, msg);
-//
-//  dlib::deserialize(m_out, back_in); //and deserialize
-//
-//  std::cout.rdbuf(backupbuf);
+  msg.from_zmq(zmq_msg);
+  msg >> m_out;
 
   std::cout << m_out << std::endl;
 

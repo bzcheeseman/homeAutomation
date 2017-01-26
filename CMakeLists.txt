@@ -39,17 +39,17 @@ endif ()
 
 include_directories(${PYTHON_INCLUDE_DIR})
 
-add_subdirectory(archive/control)
+#add_subdirectory(archive/control)
 add_subdirectory(hardware)
 add_subdirectory(messaging)
-add_subdirectory(archive/device/ml)
-add_subdirectory(archive/device/python)
-add_subdirectory(archive/device/utilities)
-add_subdirectory(archive/device/wordToVec)
+#add_subdirectory(archive/device/ml)
+#add_subdirectory(archive/device/python)
+#add_subdirectory(archive/device/utilities)
+#add_subdirectory(archive/device/wordToVec)
 
-set(SOURCE_FILES archive/main.c)
+#set(SOURCE_FILES archive/main.c)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # make this work for the other targets too - and clean this shit up!
 
-add_executable(homeAutomation ${SOURCE_FILES})
-target_link_libraries(homeAutomation ha_python)
+#add_executable(homeAutomation ${SOURCE_FILES})
+#target_link_libraries(homeAutomation ha_python)

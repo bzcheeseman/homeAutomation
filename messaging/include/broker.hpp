@@ -34,24 +34,31 @@
 
 #include <dlib/serialize.h>
 
-#include "dlib_zmq.hpp"
+#include <sodium.h>
 
-class server {
+#include "message.hpp"
+
+//make sure everything is encrypted - write good dlib cassert's
+//use libsodium to set up encryption for passwords
+
+
+class broker {
 
   //! ZMQ context
   zmqpp::context ctx_;
 
   //! ZMQ client facing port - encrypted with CURVE
   zmqpp::socket *frontend_;
+  zmqpp::auth authenticator_;
   zmqpp::curve::keypair server_keypair_;
   std::vector<std::string> client_pubkeys_;
 
-  //! ZMQ worker facing port
-  zmqpp::socket *backend_;
-
 
 public:
-  server(std::string keydir);
+  broker();
+
+//  void handle_connection_requests(std::string endpoint); //this will take in public keys from clients and add them to the vector
+
 
 
 };

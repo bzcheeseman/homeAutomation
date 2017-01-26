@@ -22,30 +22,15 @@
  */
 
 
-#ifndef HOMEAUTOMATION_DLIB_TO_ZMQ_HPP
-#define HOMEAUTOMATION_DLIB_TO_ZMQ_HPP
-
-#include <dlib/serialize.h>
-#include <zmqpp/zmqpp.hpp>
-
-namespace dlib_zmq{
-
-  template<typename serializable_type>
-  void to_zmq(serializable_type &item, zmqpp::message &message){
-    std::stringstream stream;
-    dlib::serialize(item, stream);
-    message << stream.str();
-  }
-
-  template<typename serializable_type>
-  void from_zmq(serializable_type &item, zmqpp::message &message){
-    std::string msg;
-    message >> msg;
-    std::stringstream stream(msg);
-    dlib::deserialize(item, stream);
-  }
-
-} //dlib_zmq
+#include "../include/broker.hpp"
 
 
-#endif //HOMEAUTOMATION_DLIB_TO_ZMQ_HPP
+broker::broker() : ctx_(), authenticator_(ctx_), server_keypair_(zmqpp::curve::generate_keypair()) {
+
+  frontend_ = new zmqpp::socket (ctx_, zmqpp::socket_type::router);
+
+  frontend_->set(zmqpp::socket_option::identity, "SERV");
+  frontend_->set(zmqpp::socket_option::curve_server, true);
+  frontend_->set(zmqpp::socket_option::curve_secret_key, server_keypair_.secret_key);
+
+}
