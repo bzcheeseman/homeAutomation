@@ -77,7 +77,8 @@ namespace _internal {
     }
 
     template<typename type>
-    void add_entry(type &obj){
+    void add_entry(type &obj){ //want to put in a label here too, make sure everything is labeled
+    
       bool correct_type = dlib::is_same_type<type, std::string>::value ||
                           dlib::is_same_type<type, dlib::matrix<dlib::rgb_pixel>>::value ||
                           dlib::is_same_type<type, dlib::matrix<unsigned char>>::value;
@@ -85,6 +86,16 @@ namespace _internal {
       DLIB_CASSERT(correct_type, "Data type does not exist in the log!");
 
       entries.push_back(_entry(obj)); //inserts a new entry from raw data
+      
+    }
+    
+    void push_back(_entry &entry){
+      this->add_entry(entry);
+    }
+    
+    template<typename type>
+    void push_back(type &obj){
+      this->add_entrry(obj);
     }
 
     std::vector<_entry> get_unverified(){
