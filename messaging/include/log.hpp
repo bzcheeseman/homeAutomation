@@ -28,6 +28,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <thread>
 
 #include <dlib/matrix.h>
 #include <dlib/assert.h>
@@ -37,19 +38,20 @@
 namespace _internal {
 
   struct _entry {
-    //Data stuff
+
+    _entry(){};
+    _entry(std::string data) : str_data(data), data_type(STR), verified(false) {}
+    _entry(dlib::matrix<dlib::rgb_pixel> data) : img_data(data), data_type(IMG), verified(false) {}
+    _entry(dlib::matrix<unsigned char> data) : grey_img_data(data), data_type(G_IMG), verified(false) {}
+
+    //Data
     std::string str_data;
     dlib::matrix<dlib::rgb_pixel> img_data;
     dlib::matrix<unsigned char> grey_img_data;
     enum {STR, IMG, G_IMG} data_type;
 
-    _entry(){};
-    _entry(std::string data) : str_data(data), data_type(STR) {}
-    _entry(dlib::matrix<dlib::rgb_pixel> data) : img_data(data), data_type(IMG) {}
-    _entry(dlib::matrix<unsigned char> data) : grey_img_data(data), data_type(G_IMG) {}
-
-    //Metadata (is the label human-verified? Is there a label?)
-    std::string label;
+    //Metadata
+    std::string label; //There needs to be a label of some sort, if it's just information then the label can be "__LOG__" or something
     bool verified;
 
     size_t term_added; //server heartbeat term. Everyone increments this every time the server sends out a heartbeat.
@@ -65,61 +67,89 @@ namespace _internal {
 
   };
 
+  struct entry : public _entry {
+    const std::string str_data;
+    const dlib::matrix<dlib::rgb_pixel> img_data;
+    const dlib::matrix<unsigned char> grey_img_data;
+    const enum {STR, IMG, G_IMG} data_type;
+
+    //Metadata
+    const std::string label;
+    const bool verified;
+
+    const size_t term_added;
+
+    entry(_entry &e) : str_data(e.str_data), img_data(e.img_data),
+                       grey_img_data(e.grey_img_data), data_type(e.data_type),
+                       label(e.label), verified(e.verified), term_added(e.term_added) {}
+  };
+
   //basically a raft log for the server so that I can store old pictures and add them to the training
   class log {
+    std::mutex log_mutex;
     std::vector<_entry> entries;
 
     size_t current_term; //The most recent term this log has. Every time a new entry is added,
 
-  public: //deal with labeled vs unlabeled? Should everything be labeled?
-    void add_entry(_entry &entry){ //inserts an already constructed entry type
+  public:
+    // Adding entries to the log
+    inline void add_entry(_entry &entry){ //inserts an already constructed entry type
+      DLIB_CASSERT(!entry.label.empty(), "This sample is unlabeled!");
+      std::lock_guard lock(log_mutex);
       entries.push_back(entry);
     }
 
     template<typename type>
-    void add_entry(type &obj){ //want to put in a label here too, make sure everything is labeled
+    inline void add_entry(type &obj, std::string label){ //make sure everything is labeled
     
       bool correct_type = dlib::is_same_type<type, std::string>::value ||
                           dlib::is_same_type<type, dlib::matrix<dlib::rgb_pixel>>::value ||
                           dlib::is_same_type<type, dlib::matrix<unsigned char>>::value;
 
       DLIB_CASSERT(correct_type, "Data type does not exist in the log!");
+      DLIB_CASSERT(!label.empty(), "This sample is unlabeled!");
 
-      entries.push_back(_entry(obj)); //inserts a new entry from raw data
+      _entry e(obj);
+      e.label = label;
+      e.term_added = this->current_term;
+
+      std::lock_guard lock(log_mutex);
+      entries.push_back(e); //inserts a new entry from raw data
       
     }
     
-    void push_back(_entry &entry){
+    inline void push_back(_entry &entry){
       this->add_entry(entry);
     }
     
     template<typename type>
-    void push_back(type &obj){
-      this->add_entrry(obj);
+    inline void push_back(type &obj, std::string label){
+      this->add_entry(obj, label);
     }
 
-    std::vector<_entry> get_unverified(){
-      std::vector<_entry> out;
+    // Retreiving data from the log
+    inline std::vector<entry> get_unverified(){
+      std::vector<entry> out(0);
       for (auto iter = entries.begin(); iter != entries.end(); iter++){
         if (!(iter->verified)){
-          out.push_back(*iter);
+          out.push_back(entry(*iter));
         }
       }
       return out;
     }
 
-    std::vector<_entry> get_verified(){
-      std::vector<_entry> out;
+    inline std::vector<entry> get_verified(){
+      std::vector<entry> out(0);
       for (auto iter = entries.begin(); iter != entries.end(); iter++){
         if (iter->verified){
-          out.push_back(*iter);
+          out.push_back(entry(*iter));
         }
       }
       return out;
     }
 
     template<typename type>
-    void get_all_type(std::vector<type> &vec){
+    inline void get_all_of_type(std::vector<type> &vec){
 
       bool correct_type = dlib::is_same_type<type, std::string>::value ||
                           dlib::is_same_type<type, dlib::matrix<dlib::rgb_pixel>>::value ||
@@ -130,35 +160,47 @@ namespace _internal {
       if (dlib::is_same_type<type, std::string>::value){
         for (auto iter = entries.begin(); iter != entries.end(); iter++){
           if (iter->data_type == _entry::STR){
-            vec.push_back(*iter);
+            vec.push_back(iter->str_data);
           }
         }
       }
       else if (dlib::is_same_type<type, dlib::matrix<dlib::rgb_pixel>>::value){
         for (auto iter = entries.begin(); iter != entries.end(); iter++){
           if (iter->data_type == _entry::IMG){
-            vec.push_back(*iter);
+            vec.push_back(iter->img_data);
           }
         }
       }
       else if (dlib::is_same_type<type, dlib::matrix<unsigned char>>::value){
         for (auto iter = entries.begin(); iter != entries.end(); iter++){
           if (iter->data_type == _entry::G_IMG){
-            vec.push_back(*iter);
+            vec.push_back(iter->grey_img_data);
           }
         }
       }
     }
 
-    //comparison operators?
+    // Relational operators
+    inline friend bool operator<(const log &lhs, const log &rhs){ return lhs.current_term < rhs.current_term; }
 
-    friend void serialize(log &l, std::ostream &out){
+    inline friend bool operator>(const log &lhs, const log &rhs){ return rhs < lhs; }
+
+    inline bool operator==(const log &lhs, const log &rhs){ return lhs.current_term == rhs.current_term; }
+
+    inline bool operator!=(const log &lhs, const log &rhs){ return lhs.current_term != rhs.current_term; }
+
+    //Serialization support
+    inline friend void serialize(log &l, std::ostream &out){
       for (auto iter = l.entries.begin(); iter != l.entries.end(); iter++){
         serialize(*iter, out);
       }
     }
 
-
+    inline friend void serialize(std::vector<entry> &v, std::ostream &out){
+      for (auto iter = v.begin(); iter != v.end(); iter++){
+        serialize(*iter, out);
+      }
+    }
 
   };
 
