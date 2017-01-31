@@ -37,7 +37,7 @@
 
 namespace _internal {
 
-  struct _entry {
+  struct _entry { //modify this to have template specializations with a templated list (?)
 
     _entry(){};
     _entry(std::string data) : str_data(data), data_type(STR), verified(false) {}
