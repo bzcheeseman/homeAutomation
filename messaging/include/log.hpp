@@ -35,9 +35,11 @@
 #include <dlib/pixel.h>
 #include <dlib/algs.h>
 
+#include "message.hpp"
+
 namespace _internal {
 
-  struct _entry { //modify this to have template specializations with a templated list (?)
+  struct _entry {
 
     _entry(){};
     _entry(std::string data) : str_data(data), data_type(STR), verified(false) {}
@@ -89,9 +91,9 @@ namespace _internal {
     std::mutex log_mutex;
     std::vector<_entry> entries;
 
-    size_t current_term; //The most recent term this log has. Every time a new entry is added,
+    size_t current_term; //The most recent term this log has.
 
-  public:
+  public: //add copy constructor
     // Adding entries to the log
     inline void add_entry(_entry &entry){ //inserts an already constructed entry type
       DLIB_CASSERT(!entry.label.empty(), "This sample is unlabeled!");
@@ -148,6 +150,11 @@ namespace _internal {
       return out;
     }
 
+    //Access/subscript operator
+    inline entry operator[](size_t which){
+      return entry(entries[which]);
+    }
+
     template<typename type>
     inline void get_all_of_type(std::vector<type> &vec){
 
@@ -180,7 +187,7 @@ namespace _internal {
       }
     }
 
-    // Relational operators
+    // Relational operators - based on current term
     inline friend bool operator<(const log &lhs, const log &rhs){ return lhs.current_term < rhs.current_term; }
 
     inline friend bool operator>(const log &lhs, const log &rhs){ return rhs < lhs; }

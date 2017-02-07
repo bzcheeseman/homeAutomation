@@ -36,6 +36,10 @@
 //ZMQ
 #include <zmqpp/zmqpp.hpp>
 
+/*
+ * TODO: Add a to_log function? Do I want to send these messages to a log directly?
+ */
+
 //! @namespace _internal messaging/include/message.hpp
 //! @brief holds internal methods that any API users will likely never interact with.
 namespace _internal {
@@ -46,11 +50,16 @@ namespace _internal {
    */
   class message {
 
+  protected:
     //! Recepient of this message - Human-readable format
     const std::string recipient;
 
     //! Sender of this message - Human-readable format
     const std::string sender;
+
+  private:
+    //! The type information of the contents of the message.
+    std::string contents_type;
 
     //! Contents of this message. Non-const but we still want it to be immutable.
     std::string contents;
@@ -64,9 +73,13 @@ namespace _internal {
     //! Delete copy constructor because I don't want to be able to copy a (potentially unique) message
     message(const message &other) = delete;
 
-    //! Delete move constructor because we don't need it.
-    message(message &&other) = delete;
-  
+    //! Set up move constructor for logging
+    message(message &&other) : recipient(other.recipient), sender(other.sender), contents(other.contents) {}
+
+    //add to_log(log &l) that adds the message to the log
+
+    //add from_log that sets the contents of the message from a log entry
+
     /**
      * Get recipient of message
      *
@@ -85,8 +98,8 @@ namespace _internal {
      * Sets the contents of a message. The current message payload must be empty.
      * @param payload
      */
-    inline void set(std::string payload){
-      DLIB_CASSERT(contents.empty(), "Overwriting message contents!");
+    inline virtual void set_contents(std::string payload){
+      DLIB_CASSERT(contents.empty(), "Overwriting message contents not allowed!");
       contents = payload;
     }
 
@@ -95,7 +108,7 @@ namespace _internal {
      *
      * @return Copy of the contents of the message
      */
-    inline std::string get(){
+    inline virtual std::string get_contents(){
       DLIB_CASSERT(!contents.empty(), "Message is empty!");
       return contents;
     }
@@ -105,10 +118,20 @@ namespace _internal {
      *
      * @return ZMQ message ready to send.
      */
-    zmqpp::message to_zmq(){
+    inline virtual zmqpp::message to_zmq(){
       zmqpp::message msg;
-      msg << this->contents;
+      msg << this->contents_type << this->contents;
       return msg;
+    }
+
+    /**
+     * Sends the contents of a message to a ZMQ message.
+     *
+     * @param msg The message (already constructed) to put values into.
+     */
+    inline virtual void to_zmq(zmqpp::message &msg){
+      DLIB_CASSERT(msg.size(0) == 0, "Overwriting message contents!");
+      msg << this->contents_type << this->contents;
     }
 
     /**
@@ -116,8 +139,8 @@ namespace _internal {
      *
      * @param msg A ZMQ message whose contents we are reading in
      */
-    void from_zmq(zmqpp::message &msg){
-      msg >> this->contents;
+    inline virtual void from_zmq(zmqpp::message &msg){
+      msg >> this->contents_type >> this->contents;
     }
   
     /**
@@ -133,7 +156,7 @@ namespace _internal {
     inline friend message &operator<<(message &out, serializable &obj){
       std::stringstream stream;
       dlib::serialize(obj, stream);
-      out.set(stream.str());
+      out.set_contents(stream.str());
       return out;
     }
 
@@ -148,11 +171,80 @@ namespace _internal {
      */
     template<typename serializable>
     inline friend serializable &operator>>(message &in, serializable &obj){
-      std::stringstream stream (in.get());
+      std::stringstream stream (in.get_contents());
       dlib::deserialize(obj, stream);
       return obj;
     }
   
+  };
+
+  /**
+   * @class key_swap_msg messaging/include/message.hpp
+   * @brief Holds an internal public key message handler. The user likely won't ever see this part at all.
+   *
+   * This type of message will be the only kind of message that we will send with no encryption, everything else is
+   * encrypted using one of these. Also makes it easier to ensure that the key swap took place already.
+   */
+  class key_swap_msg : public message {
+
+    //! The public key that we want to send.
+    std::string my_public_key;
+
+  public:
+    key_swap_msg(const std::string &recipient,
+                 const std::string &sender) : message(recipient, sender) {}
+
+    /**
+     * Sets the contents of the message (a public key) to the public member of a keypair.
+     *
+     * @param pubkey The public key to set in the message.
+     */
+    inline void set_contents(std::string pubkey){
+      this->my_public_key = pubkey;
+    }
+
+    /**
+     * Gets the public key contained in this message.
+     *
+     * @return A string that is equal to the public key contained in the message.
+     */
+    inline std::string get_contents() {
+      DLIB_CASSERT(!my_public_key.empty(), "No key contained!");
+      return my_public_key;
+    }
+
+    /**
+     * Sends the public key to a ZMQ message.
+     *
+     * @return ZMQ message ready to send.
+     */
+    inline zmqpp::message to_zmq(){
+      zmqpp::message msg;
+      msg << "pubkey" << this->my_public_key;
+      return msg;
+    }
+
+    /**
+     * Sends the public key to a ZMQ message.
+     *
+     * @param msg The message (already constructed) to put values into.
+     */
+    inline void to_zmq(zmqpp::message &msg){
+      DLIB_CASSERT(msg.size(0) == 0, "Overwriting message contents!");
+      msg << "pubkey" << this->my_public_key;
+    }
+
+    /**
+     * Reads in the contents of a ZMQ message
+     *
+     * @param msg A ZMQ message whose contents we are reading in
+     */
+    inline virtual void from_zmq(zmqpp::message &msg){
+      std::string key;
+      msg >> key >> this->my_public_key;
+      DLIB_ASSERT(key == "pubkey", "This message did not contain a public key!");
+    }
+
   };
 
 }; //_internal
