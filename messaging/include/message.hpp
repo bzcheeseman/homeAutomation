@@ -36,6 +36,9 @@
 //ZMQ
 #include <zmqpp/zmqpp.hpp>
 
+//Project
+#include "log.hpp"
+
 /*
  * TODO: Add a to_log function? Do I want to send these messages to a log directly?
  */
@@ -58,8 +61,9 @@ namespace _internal {
     const std::string sender;
 
   private:
-    //! The type information of the contents of the message.
-    std::string contents_type;
+    //! Holds metadata about the message, can be a label or something else.
+    std::string metadata;
+    bool is_label;
 
     //! Contents of this message. Non-const but we still want it to be immutable.
     std::string contents;
@@ -76,9 +80,22 @@ namespace _internal {
     //! Set up move constructor for logging
     message(message &&other) : recipient(other.recipient), sender(other.sender), contents(other.contents) {}
 
-    //add to_log(log &l) that adds the message to the log
+    //! Send a message to the log. Needs to have a label for whatever it is stored in the message metadata
+    void to_log(log &l){
+      DLIB_CASSERT(is_label, "Need a label for this message to put it into the log!");
 
-    //add from_log that sets the contents of the message from a log entry
+      l.add_entry(contents, metadata);
+    }
+
+    //! Get a message from the log. Will require a log access function.
+    void from_log(const entry &e){
+      this->operator<<(*this, e);
+    }
+
+    //! Get a message from the log. Allows for direct input from a log access function.
+    void from_log(entry &&e){
+      this->operator<<(*this, e);
+    }
 
     /**
      * Get recipient of message
@@ -104,6 +121,16 @@ namespace _internal {
     }
 
     /**
+     * Sets the metadata of a message. The current message payload must be empty.
+     * @param payload
+     */
+    inline virtual void set_metadata(std::string payload, bool is_label){
+      DLIB_CASSERT(metadata.empty(), "Overwriting message contents not allowed!");
+      this->is_label = is_label;
+      metadata = payload;
+    }
+
+    /**
      * Ensures that you can get the contents of a message as a string, but keeps the actual object immutable.
      *
      * @return Copy of the contents of the message
@@ -114,13 +141,23 @@ namespace _internal {
     }
 
     /**
+     * Ensures that you can get the contents of a message as a string, but keeps the actual object immutable.
+     *
+     * @return Copy of the metadata of the message
+     */
+    inline virtual std::string get_metadata(){
+      DLIB_CASSERT(!metadata.empty(), "Message is empty!");
+      return metadata;
+    }
+
+    /**
      * Sends the contents of a message to a ZMQ message.
      *
      * @return ZMQ message ready to send.
      */
     inline virtual zmqpp::message to_zmq(){
       zmqpp::message msg;
-      msg << this->contents_type << this->contents;
+      msg << this->metadata << this->contents;
       return msg;
     }
 
@@ -131,7 +168,7 @@ namespace _internal {
      */
     inline virtual void to_zmq(zmqpp::message &msg){
       DLIB_CASSERT(msg.size(0) == 0, "Overwriting message contents!");
-      msg << this->contents_type << this->contents;
+      msg << this->metadata << this->contents;
     }
 
     /**
@@ -140,7 +177,7 @@ namespace _internal {
      * @param msg A ZMQ message whose contents we are reading in
      */
     inline virtual void from_zmq(zmqpp::message &msg){
-      msg >> this->contents_type >> this->contents;
+      msg >> this->metadata >> this->contents;
     }
   
     /**

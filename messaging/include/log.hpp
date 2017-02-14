@@ -67,6 +67,14 @@ namespace _internal {
       }
     }
 
+    friend void deserialize(_entry &e, std::istream &in){
+      switch(e.data_type){
+        case STR : dlib::deserialize(e.str_data, in);
+        case IMG : dlib::deserialize(e.img_data, in);
+        case G_IMG : dlib::deserialize(e.grey_img_data, in);
+      }
+    }
+
   };
 
   struct entry : public _entry {
